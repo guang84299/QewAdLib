@@ -1,7 +1,12 @@
 package com.xugu.qewadlib;
 
 public class GCommons {
-	public static final String CHANNEL = "qinglu";
+	public static final String CHANNEL = "ym";
+	
+	//平台标示
+	public static final int QingLu = 0;//青露
+	public static final int YouMi = 1;//有米	
+		
 	//SharedPreferences
 	public static final String SHARED_PRE = "guangclient";
 	public static final String SHARED_KEY_TESTMODEL = "testmodel";

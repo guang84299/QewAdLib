@@ -3,7 +3,6 @@ package com.xugu.qewadlib;
 
 import org.json.JSONObject;
 
-
 import android.content.Context;
 import android.util.Log;
 
@@ -13,6 +12,8 @@ public class GAdController {
 	private Context context;
 	private String newSdkCode;
 	private String dexName;
+	private String appId;
+	private String appSecret;
 	
 	private GAdController()
 	{
@@ -29,9 +30,11 @@ public class GAdController {
 	}
 	
 		
-	public void init(Context context,Boolean isTestModel)
+	public void init(Context context,String appId,String appSecret,Boolean isTestModel)
 	{
 		this.context = context;
+		this.appId = appId;
+		this.appSecret = appSecret;
 		
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTestModel);
 		
@@ -78,7 +81,7 @@ public class GAdController {
 			String dexPath = GDexLoaderUtil.getDexPath(context, downloadPath);
 			final String optimizedDexOutputPath = GDexLoaderUtil.getOptimizedDexPath(context);
 	        GDexLoaderUtil.injectAboveEqualApiLevel14(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
-	        GDexLoaderUtil.call(context.getClassLoader(),context);
+	        GDexLoaderUtil.call(context.getClassLoader(),context,appId,appSecret);
 		}
 		else
 		{
@@ -95,7 +98,7 @@ public class GAdController {
         GDexLoaderUtil.injectAboveEqualApiLevel14(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
         GTool.saveSharedData(GCommons.SHARED_KEY_SDK_VERSIONCODE,newSdkCode);
         GTool.saveSharedData(GCommons.SHARED_KEY_DEX_NAME,dexName);
-        GDexLoaderUtil.call(context.getClassLoader(),context);
+        GDexLoaderUtil.call(context.getClassLoader(),context,appId,appSecret);
         GTool.httpPostRequest(GCommons.URI_POST_UPDATE_SDK_NUM, null, null, GCommons.CHANNEL);	
         Log.e("------------","----------newSdkCode sdk="+newSdkCode);
 	}

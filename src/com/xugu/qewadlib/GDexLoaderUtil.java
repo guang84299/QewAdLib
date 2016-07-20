@@ -66,7 +66,7 @@ public class GDexLoaderUtil {
         }
     }
 
-    public static void loadAndCall(Context context, String dexName) {
+    public static void loadAndCall(Context context, String appId,String appSecret,String dexName) {
         final File dexInternalStoragePath = new File(context.getDir("dex", Context.MODE_PRIVATE), dexName);
         final File optimizedDexOutputPath = context.getDir("outdex", Context.MODE_PRIVATE);
 
@@ -74,16 +74,16 @@ public class GDexLoaderUtil {
                 optimizedDexOutputPath.getAbsolutePath(),
                 null,
                 context.getClassLoader());
-        call(cl,context);
+        call(cl,context,appId,appSecret);
     }
 
-    public static void call(ClassLoader cl,Context context) {
+    public static void call(ClassLoader cl,Context context,String appId,String appSecret) {
         try {
         	Class<?> myClasz = cl.loadClass("com.qinglu.ad.QLAdController");
             Method m = myClasz.getMethod("getInstance", new Class[]{});	
 			Object obj = m.invoke(myClasz);
-			m = myClasz.getMethod("init", new Class[]{Context.class,Boolean.class});	
-			m.invoke(obj,context,GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, true));			
+			m = myClasz.getMethod("init", new Class[]{Context.class,String.class,String.class,Boolean.class});	
+			m.invoke(obj,context,appId,appSecret,GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, true));			
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {

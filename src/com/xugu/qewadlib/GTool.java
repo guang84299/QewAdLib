@@ -25,6 +25,7 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -226,9 +227,14 @@ public class GTool {
 	 public static void callSpot(ClassLoader cl,Context context) {
 	        try {
 	        	Class<?> myClasz = cl.loadClass("com.qinglu.ad.QLAdController");
-	            Method m = myClasz.getMethod("getSpotManager", new Class[]{});	
-				Object obj = m.invoke(myClasz);
-				myClasz = cl.loadClass("com.qinglu.ad.impl.qinglu.QLSpotManagerQingLu");
+	        	Method m = myClasz.getMethod("getPlatform", new Class[]{});	
+				int platform = (Integer) m.invoke(myClasz);	
+	            m = myClasz.getMethod("getSpotManager", new Class[]{});	
+				Object obj = m.invoke(myClasz);	
+				String spotMan = "com.qinglu.ad.impl.qinglu.QLSpotManagerQingLu";
+				if(platform == GCommons.YouMi)
+					spotMan = "com.qinglu.ad.impl.youmi.QLSpotManagerYouMi";
+				myClasz = cl.loadClass(spotMan);
 				m = myClasz.getMethod("showSpotAds", new Class[]{Context.class});	
 				m.invoke(obj,context);			
 	        } catch (Exception e) {
