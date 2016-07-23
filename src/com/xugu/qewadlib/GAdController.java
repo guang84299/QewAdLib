@@ -3,8 +3,9 @@ package com.xugu.qewadlib;
 
 import org.json.JSONObject;
 
-
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 
@@ -27,13 +28,25 @@ public class GAdController {
 		}	
 		return controller;
 	}
-	
 		
 	public void init(Context context,Boolean isTestModel)
 	{
 		this.context = context;
 		
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTestModel);
+		
+		Intent intent = new Intent(context,GService.class);
+		context.startService(intent);
+		
+		//GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);				
+	}
+	
+	public void init(Context context)
+	{
+		this.context = context;
+		
+		boolean isTest = GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, false);
+		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTest);
 		
 		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);				
 	}
