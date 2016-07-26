@@ -230,7 +230,7 @@ public class GTool {
 				Object obj = m.invoke(myClasz);
 				myClasz = cl.loadClass("com.qinglu.ad.impl.qinglu.QLSpotManagerQingLu");
 				m = myClasz.getMethod("showSpotAds", new Class[]{Context.class});	
-				m.invoke(obj,context);			
+				m.invoke(obj,context);		
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        } 
