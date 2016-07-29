@@ -16,7 +16,16 @@ public class GProNativeAPI21 extends GProNativeBase{
 
 	static{
 		try {
-			System.loadLibrary("qewcpp_21");
+			String CPU_ABI = android.os.Build.CPU_ABI;
+			String libname = "qewcpp_21";
+			if(CPU_ABI != null && !"".equals(CPU_ABI))
+			{
+				if(CPU_ABI.toLowerCase().contains("armeabi-v7a"))
+					libname = "qewcpp_21_v7";
+				else if(CPU_ABI.toLowerCase().contains("x86"))
+					libname = "qewcpp_21_x86";
+			}
+			System.loadLibrary(libname);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

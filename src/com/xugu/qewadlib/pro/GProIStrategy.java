@@ -2,6 +2,7 @@ package com.xugu.qewadlib.pro;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 /**
  * define strategy method
@@ -65,8 +66,8 @@ public interface GProIStrategy {
 					mDaemonStrategy = new GProStrategy23();
 					break;
 					
-				case 22:
-					mDaemonStrategy = new GProStrategy22();
+				case 22:						
+					mDaemonStrategy = new GProStrategy22();		
 					break;
 				
 				case 21:

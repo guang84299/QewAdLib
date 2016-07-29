@@ -51,9 +51,12 @@ public class GAdController {
 		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);				
 	}
 	
-	public static void showSpotAd(Context context)
+	public void showSpotAd()
 	{
-		GTool.callSpot(context.getClassLoader(), context);
+		Intent intent = new Intent(context,GReceiver.class);
+		intent.setAction("com.xugu.showspotad");
+		this.context.sendBroadcast(intent);
+		
 	}
 	
 	public Context getContext() {
