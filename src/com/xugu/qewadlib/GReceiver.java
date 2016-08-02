@@ -12,6 +12,7 @@ public class GReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {		
 		String action = intent.getAction();
+		
 		if("com.xugu.showspotad".equals(action))
 		{
 			GTool.callSpot(GAdController.getInstance().getContext().getClassLoader(),

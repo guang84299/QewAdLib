@@ -3,7 +3,6 @@ package com.xugu.qewadlib;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
@@ -21,6 +20,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
+
+
+
+
 
 
 
@@ -221,7 +224,6 @@ public class GTool {
 			}
 		}).start();
 	}
-	
 	
 	 public static void callSpot(ClassLoader cl,Context context) {
 	        try {
