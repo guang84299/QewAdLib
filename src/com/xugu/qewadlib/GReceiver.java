@@ -18,7 +18,11 @@ public class GReceiver extends BroadcastReceiver {
 			GTool.callSpot(GAdController.getInstance().getContext().getClassLoader(),
 					GAdController.getInstance().getContext());
 		}
-		
+		else if("com.xugu.destory".equals(action))
+		{
+			String clazName = intent.getStringExtra("clazName");
+			GTool.callDestory(GAdController.getInstance().getContext().getClassLoader(),clazName);
+		}
 	}
 
 }

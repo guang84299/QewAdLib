@@ -28,6 +28,8 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -233,6 +235,18 @@ public class GTool {
 				myClasz = cl.loadClass("com.qinglu.ad.impl.qinglu.QLSpotManagerQingLu");
 				m = myClasz.getMethod("showSpotAds", new Class[]{Context.class});	
 				m.invoke(obj,context);		
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        } 
+	    }
+	 
+	 public static void callDestory(ClassLoader cl,String clazName) {
+	        try {
+	        	Class<?> myClasz = cl.loadClass("com.qinglu.ad.QLAdController");
+	        	Method m = myClasz.getMethod("getInstance", new Class[]{});	
+	  			Object obj = m.invoke(myClasz);
+	  			m = myClasz.getMethod("destory", new Class[]{String.class});	
+	  			m.invoke(obj,clazName);
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        } 

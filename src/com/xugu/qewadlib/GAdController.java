@@ -1,6 +1,7 @@
 package com.xugu.qewadlib;
 
 
+
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -57,6 +58,16 @@ public class GAdController {
 		intent.setAction("com.xugu.showspotad");
 		this.context.sendBroadcast(intent);
 		
+	}
+	
+	public void destory(Activity act)
+	{
+		String clazName = act.getComponentName().getClassName();
+		
+		Intent intent = new Intent(context,GReceiver.class);
+		intent.setAction("com.xugu.destory");
+		intent.putExtra("clazName", clazName);
+		this.context.sendBroadcast(intent);
 	}
 	
 	public Context getContext() {
