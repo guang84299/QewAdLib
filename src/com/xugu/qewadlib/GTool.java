@@ -30,6 +30,8 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -42,14 +44,27 @@ public class GTool {
 
 	private static final String TAG = "GTool";
 
-	// µÃµ½µ±Ç°SharedPreferences
+	// å¾—åˆ°å½“å‰SharedPreferences
 	public static SharedPreferences getSharedPreferences() {
 		Context context =  GAdController.getInstance().getContext();
 		return context.getSharedPreferences(GCommons.SHARED_PRE,
 				Activity.MODE_PRIVATE);
 	}
-
-	// ±£´æÒ»¸öshareÊı¾İ
+	
+	// å¾—åˆ°å½“å‰SharedPreferences
+	public static SharedPreferences getSharedPreferences(Context context) {
+		return context.getSharedPreferences(GCommons.SHARED_PRE,
+				Activity.MODE_PRIVATE);
+	}
+	
+	//å¾—åˆ°åŒ…å
+	public static String getPackageName()
+	{
+		Context context =  GAdController.getInstance().getContext();
+		return context.getPackageName();
+	}
+	
+	// ä¿å­˜ä¸€ä¸ªshareæ•°æ®
 	public static <T> void saveSharedData(String key, T value) {
 		SharedPreferences mySharedPreferences = getSharedPreferences();
 		Editor editor = mySharedPreferences.edit();
@@ -64,12 +79,12 @@ public class GTool {
 		} else if (value instanceof Boolean) {
 			editor.putBoolean(key, (Boolean) value);
 		}
-		// Ìá½»µ±Ç°Êı¾İ
+		// æäº¤å½“å‰æ•°æ®
 		editor.commit();
 	}
 
-	// ½âÎö²¢Ö´ĞĞÒ»¸öcallback 
-	//target Ä¿±ê  function ·½·¨Ãû  data ´«ÈëÊı¾İ  cdata ´«ÈëÊı¾İ2
+	// è§£æå¹¶æ‰§è¡Œä¸€ä¸ªcallback 
+	//target ç›®æ ‡  function æ–¹æ³•å  data ä¼ å…¥æ•°æ®  cdata ä¼ å…¥æ•°æ®2
 	public static void parseFunction(Object target, String function,
 			Object data, Object cdata) {
 		try {
@@ -83,17 +98,17 @@ public class GTool {
 			Method m = c.getMethod(function, args);
 			m.invoke(target, data, cdata);
 		} catch (Exception e) {
-			Log.e(TAG, "parseFunction ½âÎöÊ§°Ü£¡");
+			Log.e(TAG, "parseFunction è§£æå¤±è´¥ï¼");
 		}
 	}
 
-	// ·¢ËÍÒ»¸öhttp getÇëÇó dataUrl °üº¬Êı¾İµÄÇëÇóÂ·¾¶
-	//target Ä¿±ê  callback ·½·¨Ãû  data ´«ÈëÊı¾İ 
+	// å‘é€ä¸€ä¸ªhttp getè¯·æ±‚ dataUrl åŒ…å«æ•°æ®çš„è¯·æ±‚è·¯å¾„
+	//target ç›®æ ‡  callback æ–¹æ³•å  data ä¼ å…¥æ•°æ® 
 	public static void httpGetRequest(final String dataUrl,
 			final Object target, final String callback, final Object data) {
 		new Thread() {
 			public void run() {
-				// µÚÒ»²½£º´´½¨HttpClient¶ÔÏó
+				// ç¬¬ä¸€æ­¥ï¼šåˆ›å»ºHttpClientå¯¹è±¡
 				HttpClient httpCient = new DefaultHttpClient();
 				HttpGet httpGet = new HttpGet(dataUrl);
 				HttpResponse httpResponse;
@@ -102,12 +117,12 @@ public class GTool {
 					httpResponse = httpCient.execute(httpGet);
 					if (httpResponse.getStatusLine().getStatusCode() == 200) {
 						HttpEntity entity = httpResponse.getEntity();
-						response = EntityUtils.toString(entity, "utf-8");// ½«entityµ±ÖĞµÄÊı¾İ×ª»»Îª×Ö·û´®					
+						response = EntityUtils.toString(entity, "utf-8");// å°†entityå½“ä¸­çš„æ•°æ®è½¬æ¢ä¸ºå­—ç¬¦ä¸²					
 					} else {
-						Log.e(TAG, "httpGetRequest ÇëÇóÊ§°Ü£¡");
+						Log.e(TAG, "httpGetRequest è¯·æ±‚å¤±è´¥ï¼");
 					}
 				} catch (Exception e) {
-					Log.e(TAG, "httpGetRequest ÇëÇóÊ§°Ü£¡");
+					Log.e(TAG, "httpGetRequest è¯·æ±‚å¤±è´¥ï¼");
 				} finally {
 					parseFunction(target, callback, data, response);
 				}
@@ -115,7 +130,7 @@ public class GTool {
 		}.start();
 	}
 	
-	// ·¢ËÍÒ»¸öhttp postÇëÇó url ÇëÇóÂ·¾¶
+	// å‘é€ä¸€ä¸ªhttp postè¯·æ±‚ url è¯·æ±‚è·¯å¾„
 	public static void httpPostRequest(final String url,
 			final Object target, final String callback, final Object data)
 	{
@@ -126,7 +141,7 @@ public class GTool {
 					List<NameValuePair> pairList = new ArrayList<NameValuePair>();
 					if(data == null)
 					{
-						Log.e(TAG, "post ÇëÇóÊı¾İÎª¿Õ");
+						Log.e(TAG, "post è¯·æ±‚æ•°æ®ä¸ºç©º");
 					}	
 					else
 					{
@@ -136,27 +151,27 @@ public class GTool {
 					
 					HttpEntity requestHttpEntity = new UrlEncodedFormEntity(
 							pairList, "UTF-8");
-					// URLÊ¹ÓÃ»ù±¾URL¼´¿É£¬ÆäÖĞ²»ĞèÒª¼Ó²ÎÊı
+					// URLä½¿ç”¨åŸºæœ¬URLå³å¯ï¼Œå…¶ä¸­ä¸éœ€è¦åŠ å‚æ•°
 					HttpPost httpPost = new HttpPost(url);
-					// ½«ÇëÇóÌåÄÚÈİ¼ÓÈëÇëÇóÖĞ
+					// å°†è¯·æ±‚ä½“å†…å®¹åŠ å…¥è¯·æ±‚ä¸­
 					httpPost.setEntity(requestHttpEntity);
-					// ĞèÒª¿Í»§¶Ë¶ÔÏóÀ´·¢ËÍÇëÇó
+					// éœ€è¦å®¢æˆ·ç«¯å¯¹è±¡æ¥å‘é€è¯·æ±‚
 					HttpClient httpClient = new DefaultHttpClient();
 					httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 20000); 
 					httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 60000);
-					// ·¢ËÍÇëÇó
+					// å‘é€è¯·æ±‚
 					HttpResponse response = httpClient.execute(httpPost);
-					// ÏÔÊ¾ÏìÓ¦
+					// æ˜¾ç¤ºå“åº”
 					if (response.getStatusLine().getStatusCode() == 200) {
 						HttpEntity entity = response.getEntity();
 						responseStr = EntityUtils.toString(entity,
-								"utf-8");// ½«entityµ±ÖĞµÄÊı¾İ×ª»»Îª×Ö·û´®
-						Log.i(TAG, "===postÇëÇó³É¹¦===");						
+								"utf-8");// å°†entityå½“ä¸­çš„æ•°æ®è½¬æ¢ä¸ºå­—ç¬¦ä¸²
+						Log.i(TAG, "===postè¯·æ±‚æˆåŠŸ===");						
 					} else {
-						Log.e(TAG, "===postÇëÇóÊ§°Ü===");
+						Log.e(TAG, "===postè¯·æ±‚å¤±è´¥===");
 					}
 				} catch (Exception e) {
-					Log.e(TAG, "===postÇëÇóÒì³£===");
+					Log.e(TAG, "===postè¯·æ±‚å¼‚å¸¸===");
 					e.printStackTrace();
 				}
 				finally {
@@ -166,7 +181,7 @@ public class GTool {
 		}.start();
 	}
 	
-	// ÏÂÔØ×ÊÔ´ url ÇëÇóÂ·¾¶
+	// ä¸‹è½½èµ„æº url è¯·æ±‚è·¯å¾„
 	public static void downloadRes(final String url,
 			final Object target, final String callback, final Object data,final boolean isDelete)
 	{
@@ -181,7 +196,7 @@ public class GTool {
 				String responseStr = "0";
 				try {
 				Log.e("===============", "==="+pic);
-				// ÅĞ¶ÏÍ¼Æ¬ÊÇ·ñ´æÔÚ
+				// åˆ¤æ–­å›¾ç‰‡æ˜¯å¦å­˜åœ¨
 				String picRelPath = context.getFilesDir().getPath() + "/" + pic;
 				File file = new File(picRelPath);
 				if (file.exists()) {
@@ -190,7 +205,7 @@ public class GTool {
 					else
 						return;
 				}
-				// Èç¹û²»´æÔÚÅĞ¶ÏÎÄ¼ş¼ĞÊÇ·ñ´æÔÚ£¬²»´æÔÚÔò´´½¨
+				// å¦‚æœä¸å­˜åœ¨åˆ¤æ–­æ–‡ä»¶å¤¹æ˜¯å¦å­˜åœ¨ï¼Œä¸å­˜åœ¨åˆ™åˆ›å»º
 				File destDir = new File(context.getFilesDir().getPath() + "/"
 						+ pic.substring(0, pic.lastIndexOf("/")));
 				if (!destDir.exists()) {
@@ -198,7 +213,7 @@ public class GTool {
 				}
 				String address = url + pic;
 				
-					// ÇëÇó·şÎñÆ÷¹ã¸æÍ¼Æ¬
+					// è¯·æ±‚æœåŠ¡å™¨å¹¿å‘Šå›¾ç‰‡
 					URLConnection openConnection = new URL(address)
 							.openConnection();
 					openConnection.setConnectTimeout(20*1000);
@@ -206,7 +221,7 @@ public class GTool {
 					InputStream is = openConnection.getInputStream();
 					byte[] buff = new byte[1024];
 					int len;
-					// È»ºóÊÇ´´½¨ÎÄ¼ş¼Ğ
+					// ç„¶åæ˜¯åˆ›å»ºæ–‡ä»¶å¤¹
 					FileOutputStream fos = new FileOutputStream(file);
 					if (null != is) {
 						while ((len = is.read(buff)) != -1) {
@@ -217,7 +232,7 @@ public class GTool {
 					is.close();
 					responseStr = "1";
 				} catch (Exception e) {
-					Log.e(TAG, "===postÇëÇó×ÊÔ´Òì³£==="+e.getLocalizedMessage());
+					Log.e(TAG, "===postè¯·æ±‚èµ„æºå¼‚å¸¸==="+e.getLocalizedMessage());
 					e.printStackTrace();
 				}
 				finally {
@@ -251,4 +266,6 @@ public class GTool {
 	            e.printStackTrace();
 	        } 
 	    }
+	 
+	
 }

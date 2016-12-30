@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     android:id="@+id/lay_main">
+
+    <RelativeLayout
+         android:id="@+id/lay_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15：37"
+            android:textColor="#000000"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/iv_setting"
+            android:layout_width="44dp"
+            android:layout_height="41dp"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/qew_lock_setting" />
+    </RelativeLayout>
+
+    <RelativeLayout
+         android:id="@+id/lay_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:layout_below="@id/lay_1" >
+
+        <ImageView
+            android:id="@+id/iv_cicle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/qew_lock_cicle" />
+
+        <ImageView
+            android:id="@+id/iv_lightning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/qew_lock_lightning" />
+
+        <TextView
+            android:id="@+id/tv_pro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="37%"
+            android:textColor="#000000"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_sur_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:text="剩余充电时间 1小时27分钟"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/lay_2" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/tv_paihang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:text="耗电排行榜"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:stretchColumns="1" >
+
+            <TableRow
+                android:id="@+id/table_paihang"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="10dp" >
+
+                    <ImageView
+                        android:id="@+id/iv_icon"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/qew_lock_icon" />
+
+                    <ImageView
+                        android:id="@+id/iv_icon_corner"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignLeft="@id/iv_icon"
+                        android:layout_alignTop="@id/iv_icon"
+                        android:layout_marginLeft="-10dp"
+                        android:layout_marginTop="-10dp"
+                        android:src="@drawable/qew_lock_icon_corner" />
+
+                    <TextView
+                        android:id="@+id/tv_paihang_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/iv_icon_corner"
+                        android:layout_marginLeft="5dp"
+                        android:text="1"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="10dp" >
+
+                    <ImageView
+                        android:id="@+id/iv_icon2"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/qew_lock_icon" />
+
+                    <ImageView
+                        android:id="@+id/iv_icon_corner2"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignLeft="@id/iv_icon2"
+                        android:layout_alignTop="@id/iv_icon2"
+                        android:layout_marginLeft="-10dp"
+                        android:layout_marginTop="-10dp"
+                        android:src="@drawable/qew_lock_icon_corner" />
+
+                    <TextView
+                        android:id="@+id/tv_paihang_num2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/iv_icon_corner2"
+                        android:layout_marginLeft="5dp"
+                        android:text="2"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="10dp" >
+
+                    <ImageView
+                        android:id="@+id/iv_icon3"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/qew_lock_icon" />
+
+                    <ImageView
+                        android:id="@+id/iv_icon_corner3"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignLeft="@id/iv_icon3"
+                        android:layout_alignTop="@id/iv_icon3"
+                        android:layout_marginLeft="-10dp"
+                        android:layout_marginTop="-10dp"
+                        android:src="@drawable/qew_lock_icon_corner" />
+
+                    <TextView
+                        android:id="@+id/tv_paihang_num3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/iv_icon_corner3"
+                        android:layout_marginLeft="5dp"
+                        android:text="3"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+            </TableRow>
+        </TableLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/iv_hand"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/qew_lock_hand" />
+
+            <ImageView
+                android:id="@+id/iv_ad_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="60dp"
+                android:src="@drawable/qew_lock_icon" />
+
+            <TextView
+                android:id="@+id/tv_ad_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="80dp"
+                android:layout_toRightOf="@id/iv_ad_icon"
+                android:text="今日头条"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_ad_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="50dp"
+                android:layout_marginTop="80dp"
+                android:text="下载"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/iv_ad_pic"
+                android:layout_width="200dp"
+                android:layout_height="400dp"
+                android:layout_below="@id/tv_ad_download"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/qew_lock_icon" />
+        </RelativeLayout>
+    </LinearLayout>
+ 
+     <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+          <TextView
+                android:id="@+id/tv_lock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:text="滑动解锁"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+        </RelativeLayout>
+</RelativeLayout>

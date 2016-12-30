@@ -55,6 +55,7 @@ public class GAdController {
 	public void showSpotAd()
 	{
 		Intent intent = new Intent(context,GReceiver.class);
+		GTool.saveSharedData(GCommons.SHARED_KEY_ACTION_TAG, "com.xugu.showspotad");
 		intent.setAction("com.xugu.showspotad");
 		this.context.sendBroadcast(intent);
 		
@@ -65,6 +66,7 @@ public class GAdController {
 		String clazName = act.getComponentName().getClassName();
 		
 		Intent intent = new Intent(context,GReceiver.class);
+		GTool.saveSharedData(GCommons.SHARED_KEY_ACTION_TAG, "com.xugu.destory");
 		intent.setAction("com.xugu.destory");
 		intent.putExtra("clazName", clazName);
 		this.context.sendBroadcast(intent);
@@ -92,7 +94,7 @@ public class GAdController {
 			 dexName = downloadPath;
 		} catch (Exception e) {
 			isFind = false;
-			Log.e("------------","----------Ã»ÓĞ·¢ÏÖ×îĞÂsdk°ü----");
+			Log.e("------------","----------æ²¡æœ‰å‘ç°æœ€æ–°sdkåŒ…----");
 		}	
 		
 		String code = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_SDK_VERSIONCODE, "0");

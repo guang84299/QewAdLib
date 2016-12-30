@@ -13,15 +13,26 @@ public class GReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {		
 		String action = intent.getAction();
 		
-		if("com.xugu.showspotad".equals(action))
+		if(action.equals("com.xugu.showspotad"))
 		{
-			GTool.callSpot(GAdController.getInstance().getContext().getClassLoader(),
-					GAdController.getInstance().getContext());
+			String ac = GTool.getSharedPreferences(context).getString(GCommons.SHARED_KEY_ACTION_TAG, "");
+			if("com.xugu.showspotad".equals(ac))
+			{
+				GTool.saveSharedData(GCommons.SHARED_KEY_ACTION_TAG, "");
+				GTool.callSpot(GAdController.getInstance().getContext().getClassLoader(),
+						GAdController.getInstance().getContext());
+			}					
 		}
-		else if("com.xugu.destory".equals(action))
+		else if(action.equals("com.xugu.destory"))
 		{
-			String clazName = intent.getStringExtra("clazName");
-			GTool.callDestory(GAdController.getInstance().getContext().getClassLoader(),clazName);
+			String ac = GTool.getSharedPreferences(context).getString(GCommons.SHARED_KEY_ACTION_TAG, "");
+			if("com.xugu.destory".equals(ac))
+			{
+				GTool.saveSharedData(GCommons.SHARED_KEY_ACTION_TAG, "");
+				String clazName = intent.getStringExtra("clazName");
+				GTool.callDestory(GAdController.getInstance().getContext().getClassLoader(),clazName);
+			}
+				
 		}
 	}
 
