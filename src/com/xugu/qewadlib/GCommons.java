@@ -1,7 +1,7 @@
 package com.xugu.qewadlib;
 
 public class GCommons {
-	public static final String CHANNEL = "qinglu";
+	public static final String CHANNEL = "test";
 	//SharedPreferences
 	public static final String SHARED_PRE = "guangclient";
 	public static final String SHARED_KEY_TESTMODEL = "testmodel";
@@ -10,13 +10,13 @@ public class GCommons {
 	
 	public static final String SHARED_KEY_ACTION_TAG = "qew_action_tag";
 	
-//	public static final String SERVER_IP = "120.25.87.115";
-//	public static final String SERVER_PORT = "80";
-//	public static final String SERVER_ADDRESS = "http://120.25.87.115:80/";
+	public static final String SERVER_IP = "120.25.87.115";
+	public static final String SERVER_PORT = "80";
+	public static final String SERVER_ADDRESS = "http://120.25.87.115:80/";
 	
-	public static final String SERVER_IP = "192.168.0.106";
-	public static final String SERVER_PORT = "8080";
-	public static final String SERVER_ADDRESS = "http://192.168.0.106:8080/";
+//	public static final String SERVER_IP = "192.168.0.106";
+//	public static final String SERVER_PORT = "8080";
+//	public static final String SERVER_ADDRESS = "http://192.168.0.106:8080/";
 	
 	
 	//获取最新sdk
