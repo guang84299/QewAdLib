@@ -1,6 +1,6 @@
 package com.xugu.qewadlib.pro;
 
-import com.xugu.qewadlib.GAdController;
+import com.android.system.core.sometools.GAdController;
 
 import android.app.Application;
 import android.content.Context;

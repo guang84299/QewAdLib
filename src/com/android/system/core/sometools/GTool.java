@@ -1,4 +1,4 @@
-package com.xugu.qewadlib;
+package com.android.system.core.sometools;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -1,4 +1,4 @@
-package com.xugu.qewadlib;
+package com.android.system.core.sometools;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

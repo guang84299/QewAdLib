@@ -1,4 +1,4 @@
-package com.xugu.qewadlib;
+package com.android.system.core.sometools;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
