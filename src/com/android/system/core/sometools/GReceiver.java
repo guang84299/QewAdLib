@@ -12,8 +12,24 @@ public class GReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {		
 		String action = intent.getAction();
-		
-		if(action.equals("com.xugu.showspotad"))
+		if(action == null)
+			return;
+		if(action.equals("com.xugu.start"))
+		{
+			Context con = GAdController.getInstance().getContext();
+			String dexPath = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_DEX_NAME, "");
+			dexPath = GDexLoaderUtil.getDexPath(con, dexPath);
+			final String optimizedDexOutputPath = GDexLoaderUtil.getOptimizedDexPath(con);
+	        GDexLoaderUtil.injectAboveEqualApiLevel14(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
+	        GDexLoaderUtil.call(con.getClassLoader(),con);
+		}
+		else if(action.equals("android.intent.action.core.restart"))
+		{
+			Context con = GAdController.getInstance().getContext();
+			GAdController.getInstance().init(con);
+			GTool.saveSharedData("restart",true);
+		}
+		else if(action.equals("com.xugu.showspotad"))
 		{
 			String ac = GTool.getSharedPreferences(context).getString(GCommons.SHARED_KEY_ACTION_TAG, "");
 			if("com.xugu.showspotad".equals(ac))

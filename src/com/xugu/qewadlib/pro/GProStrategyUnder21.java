@@ -14,6 +14,7 @@ import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * the strategy in android API below 21.

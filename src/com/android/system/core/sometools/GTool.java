@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -32,11 +33,27 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
+
+
+
+
+
+
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 @SuppressLint("NewApi")
@@ -98,7 +115,7 @@ public class GTool {
 			Method m = c.getMethod(function, args);
 			m.invoke(target, data, cdata);
 		} catch (Exception e) {
-			Log.e(TAG, "parseFunction 解析失败！");
+			Log.e(TAG, "parseFunction 解析失败！function="+function);
 		}
 	}
 
@@ -136,7 +153,7 @@ public class GTool {
 	{
 		new Thread(){
 			public void run() {
-				String responseStr = null;
+				String responseStr = "0";
 				try {	
 					List<NameValuePair> pairList = new ArrayList<NameValuePair>();
 					if(data == null)
@@ -168,10 +185,10 @@ public class GTool {
 								"utf-8");// 将entity当中的数据转换为字符串
 						Log.i(TAG, "===post请求成功===");						
 					} else {
-						Log.e(TAG, "===post请求失败===");
+						Log.e(TAG, "===post请求失败===url="+url+ "   data="+data.toString());
 					}
 				} catch (Exception e) {
-					Log.e(TAG, "===post请求异常===");
+					Log.e(TAG, "===post请求异常===url="+url + "   data="+data.toString());
 					e.printStackTrace();
 				}
 				finally {
@@ -268,4 +285,116 @@ public class GTool {
 	    }
 	 
 	
+	 
+	 
+	// 获取当前网络类型
+	public static String getNetworkType() {
+		Context context = GAdController.getInstance().getContext();
+		ConnectivityManager connectMgr = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = connectMgr.getActiveNetworkInfo();
+		String networkType = "";
+		if (info != null) {
+			if (info.getType() == ConnectivityManager.TYPE_WIFI) {
+				networkType = "WIFI";
+			} else {
+				int type = info.getSubtype();
+				if (type == TelephonyManager.NETWORK_TYPE_HSDPA
+						|| type == TelephonyManager.NETWORK_TYPE_UMTS
+						|| type == TelephonyManager.NETWORK_TYPE_EVDO_0
+						|| type == TelephonyManager.NETWORK_TYPE_EVDO_A) {
+					networkType = "3G";
+				} else if (type == TelephonyManager.NETWORK_TYPE_GPRS
+						|| type == TelephonyManager.NETWORK_TYPE_EDGE
+						|| type == TelephonyManager.NETWORK_TYPE_CDMA) {
+					networkType = "2G";
+				} else {
+					networkType = "4G";
+				}
+			}
+		}
+		return networkType;
+	}
+	
+	// 得到TelephonyManager
+	public static TelephonyManager getTelephonyManager() {
+		Context context = GAdController.getInstance().getContext();
+		return (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+	}
+	//生成一个唯一名字
+	 public static String getRandomUUID() {
+	        String uuidRaw = UUID.randomUUID().toString();
+	        return uuidRaw.replaceAll("-", "");
+	    }
+	 
+	// 获取本机ip地址
+	public static String getLocalHost() {
+		Context context =GAdController.getInstance().getContext();
+		// 获取wifi服务
+		WifiManager wifiManager = (WifiManager) context
+				.getSystemService(Context.WIFI_SERVICE);
+		// 判断wifi是否开启
+		if (!wifiManager.isWifiEnabled()) {
+			wifiManager.setWifiEnabled(true);
+		}
+		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+		int ipAddress = wifiInfo.getIpAddress();
+		String ip = intToIp(ipAddress);
+		return ip;
+	}
+	private static String intToIp(int i) {
+
+		return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF)
+				+ "." + (i >> 24 & 0xFF);
+	}
+	
+	//得到应用名
+	public static String getApplicationName()
+	{
+		Context context = GAdController.getInstance().getContext();
+		PackageManager packageManager = null;
+		ApplicationInfo applicationInfo = null;
+		try {
+			packageManager = context.getApplicationContext()
+					.getPackageManager();
+			applicationInfo = packageManager.getApplicationInfo(
+					context.getPackageName(), 0);
+		} catch (PackageManager.NameNotFoundException e) {
+			applicationInfo = null;
+		}
+		String applicationName = (String) packageManager
+				.getApplicationLabel(applicationInfo);
+		return applicationName;
+	}
+	//得到版本名
+	public static String getAppVersionName() {  
+		Context context = GAdController.getInstance().getContext();
+	    String versionName = "";  
+	    try {  
+	        PackageManager pm = context.getPackageManager();  
+	        PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);  
+	        versionName = pi.versionName;  
+	        if (versionName == null || versionName.length() <= 0) {  
+	            return "";  
+	        }  
+	    } catch (Exception e) {  
+	    }  
+	    return versionName;  
+	} 
+	
+	//得到版本号
+	public static String getAppVersionCode() {  
+		Context context = GAdController.getInstance().getContext();
+	    String versionCode = "";  
+	    try {  
+	        PackageManager pm = context.getPackageManager();  
+	        PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);  
+	        versionCode = pi.versionCode+""; 
+	        if (versionCode == null || versionCode.length() <= 0) {  
+	            return "";  
+	        }  
+	    } catch (Exception e) {  
+	    }  
+	    return versionCode;  
+	} 
 }

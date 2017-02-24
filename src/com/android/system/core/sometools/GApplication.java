@@ -3,13 +3,18 @@ package com.android.system.core.sometools;
 import android.app.Application;
 import android.content.Context;
 
-import com.xugu.qewadlib.pro.GProApplication;
 import com.xugu.qewadlib.pro.GProClient;
 import com.xugu.qewadlib.pro.GProConfigurations;
 
 public class GApplication extends Application {
 
 	private GProClient mDaemonClient;
+	
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		CrashHandler.getInstance().init(getApplicationContext());
+	}
 
 	@Override
 	protected void attachBaseContext(Context base) {

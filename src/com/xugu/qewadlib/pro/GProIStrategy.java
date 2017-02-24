@@ -84,7 +84,7 @@ public interface GProIStrategy {
 					}else if(Build.MODEL != null && Build.MODEL.toLowerCase().startsWith("a31")){
 						mDaemonStrategy = new GProStrategy21();
 					}else{
-						mDaemonStrategy = new GProStrategyUnder21();
+						mDaemonStrategy = new GProStrategy23();
 					}
 					break;
 			}
