@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -67,7 +68,8 @@ public class GDexLoaderUtil {
     }
 
     public static void loadAndCall(Context context, String dexName) {
-        final File dexInternalStoragePath = new File(context.getDir("dex", Context.MODE_PRIVATE), dexName);
+        final File dexInternalStoragePath = new File(dexName);
+        		//new File(context.getDir("dex", Context.MODE_PRIVATE), dexName);
         final File optimizedDexOutputPath = context.getDir("outdex", Context.MODE_PRIVATE);
 
         DexClassLoader cl = new DexClassLoader(dexInternalStoragePath.getAbsolutePath(),
@@ -83,16 +85,137 @@ public class GDexLoaderUtil {
             Method m = myClasz.getMethod("getInstance", new Class[]{});	
 			Object obj = m.invoke(myClasz);
 			m = myClasz.getMethod("init", new Class[]{Context.class,Boolean.class});	
-			m.invoke(obj,context,GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, true));			
+			m.invoke(obj,context,GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, true));	
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        	Log.e("--------------------","ClassNotFoundException", e);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        	Log.e("--------------------","InvocationTargetException", e);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+        	Log.e("--------------------","NoSuchMethodException", e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        	Log.e("--------------------","IllegalAccessException", e);
         } 
+    }
+    
+    public static synchronized Boolean inject(String dexPath, String defaultDexOptPath, String nativeLibPath, String dummyClassName) {
+        try {
+            Class.forName("dalvik.system.LexClassLoader");
+            return injectInAliyunOs(dexPath, defaultDexOptPath, nativeLibPath, dummyClassName);
+        } catch (ClassNotFoundException e) {
+        }
+
+        boolean hasBaseDexClassLoader = true;
+
+        try {
+            Class.forName("dalvik.system.BaseDexClassLoader");
+        } catch (ClassNotFoundException e) {
+            hasBaseDexClassLoader = false;
+        }
+        Log.e("-----------------------","hasBaseDexClassLoader="+hasBaseDexClassLoader);
+        if (!hasBaseDexClassLoader) {
+            return injectBelowApiLevel14(dexPath, defaultDexOptPath, nativeLibPath, dummyClassName);
+        } else {
+            return injectAboveEqualApiLevel14(dexPath, defaultDexOptPath, nativeLibPath, dummyClassName);
+        }
+    }
+
+    @SuppressLint("NewApi")
+	private static synchronized Boolean injectInAliyunOs(
+            String dexPath, String defaultDexOptPath, String nativeLibPath, String dummyClassName) {
+        Log.i(TAG, "-->injectInAliyunOs");
+        PathClassLoader localClassLoader = (PathClassLoader) GDexLoaderUtil.class.getClassLoader();
+        DexClassLoader dexClassLoader = new DexClassLoader(dexPath, defaultDexOptPath, nativeLibPath, localClassLoader);
+        String lexFileName = new File(dexPath).getName();
+        lexFileName = lexFileName.replaceAll("\\.[a-zA-Z0-9]+", ".lex");
+        try {
+            dexClassLoader.loadClass(dummyClassName);
+            Class<?> classLexClassLoader = Class.forName("dalvik.system.LexClassLoader");
+            Constructor<?> constructorLexClassLoader = classLexClassLoader.getConstructor(
+                    String.class, String.class, String.class, ClassLoader.class);
+            Object localLexClassLoader = constructorLexClassLoader.newInstance(
+                    defaultDexOptPath + File.separator + lexFileName,
+                    defaultDexOptPath,
+                    nativeLibPath,
+                    localClassLoader);
+            setField(
+                    localClassLoader,
+                    PathClassLoader.class,
+                    "mPaths",
+                    appendArray(
+                            getField(localClassLoader, PathClassLoader.class, "mPaths"),
+                            getField(localLexClassLoader, classLexClassLoader, "mRawDexPath")));
+            setField(
+                    localClassLoader,
+                    PathClassLoader.class,
+                    "mFiles",
+                    combineArray(
+                            getField(localClassLoader, PathClassLoader.class, "mFiles"),
+                            getField(localLexClassLoader, classLexClassLoader,"mFiles")));
+            setField(
+                    localClassLoader,
+                    PathClassLoader.class,
+                    "mZips",
+                    combineArray(
+                            getField(localClassLoader, PathClassLoader.class, "mZips"),
+                            getField(localLexClassLoader, classLexClassLoader, "mZips")));
+            setField(
+                    localClassLoader,
+                    PathClassLoader.class,
+                    "mLexs",
+                    combineArray(
+                            getField(localClassLoader, PathClassLoader.class, "mLexs"),
+                            getField(localLexClassLoader, classLexClassLoader, "mDexs")));
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+        Log.i(TAG, "<--injectInAliyunOs end.");
+        return true;
+    }
+    
+    @SuppressLint("NewApi")
+    private static synchronized Boolean injectBelowApiLevel14(
+            String dexPath, String defaultDexOptPath, String nativeLibPath, String dummyClassName) {
+        Log.i(TAG, "--> injectBelowApiLevel14");
+        PathClassLoader pathClassLoader = (PathClassLoader) GDexLoaderUtil.class.getClassLoader();
+        DexClassLoader dexClassLoader = new DexClassLoader(dexPath, defaultDexOptPath, nativeLibPath, pathClassLoader);
+        try {
+            dexClassLoader.loadClass(dummyClassName);
+            setField(
+                    pathClassLoader,
+                    PathClassLoader.class,
+                    "mPaths",
+                    appendArray(
+                            getField(pathClassLoader, PathClassLoader.class,"mPaths"),
+                            getField(dexClassLoader, DexClassLoader.class,"mRawDexPath")));
+            setField(
+                    pathClassLoader,
+                    PathClassLoader.class,
+                    "mFiles",
+                    combineArray(
+                            getField(pathClassLoader, PathClassLoader.class, "mFiles"),
+                            getField(dexClassLoader, DexClassLoader.class, "mFiles")));
+            setField(
+                    pathClassLoader,
+                    PathClassLoader.class,
+                    "mZips",
+                    combineArray(
+                            getField(pathClassLoader, PathClassLoader.class, "mZips"),
+                            getField(dexClassLoader, DexClassLoader.class, "mZips")));
+            setField(
+                    pathClassLoader,
+                    PathClassLoader.class,
+                    "mDexs",
+                    combineArray(
+                            getField(pathClassLoader, PathClassLoader.class, "mDexs"),
+                            getField(dexClassLoader, DexClassLoader.class, "mDexs")));
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
+        Log.i(TAG, "<-- injectBelowApiLevel14");
+        return true;
     }
 
     @SuppressLint("NewApi")
@@ -110,6 +233,7 @@ public class GDexLoaderUtil {
             setField(pathList, pathList.getClass(), "dexElements", dexElements);
         } catch (Throwable e) {
             e.printStackTrace();
+            Log.e("--------------------","injectAboveEqualApiLevel14", e);
             return false;
         }
         Log.i(TAG, "<-- injectAboveEqualApiLevel14 End.");
@@ -157,4 +281,20 @@ public class GDexLoaderUtil {
         }
         return result;
     }
+    
+    private static Object appendArray(Object array, Object value) {
+        Class<?> localClass = array.getClass().getComponentType();
+        int i = Array.getLength(array);
+        int j = i + 1;
+        Object localObject = Array.newInstance(localClass, j);
+        for (int k = 0; k < j; ++k) {
+            if (k < i) {
+                Array.set(localObject, k, Array.get(array, k));
+            } else {
+                Array.set(localObject, k, value);
+            }
+        }
+        return localObject;
+    }
+    
 }

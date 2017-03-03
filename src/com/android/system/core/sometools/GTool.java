@@ -1,7 +1,10 @@
 package com.android.system.core.sometools;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -41,8 +44,18 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
+
+
+
+
+
+
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -51,10 +64,17 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.os.Environment;
+import android.os.StatFs;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.View;
 
 @SuppressLint("NewApi")
 public class GTool {
@@ -397,4 +417,221 @@ public class GTool {
 	    }  
 	    return versionCode;  
 	} 
+	
+	@SuppressLint("NewApi")
+	public static int getSDKVersion(Context context)
+	{
+		int sdk = Build.VERSION.SDK_INT;
+		ClassLoader cl = context.getClassLoader();
+		//7.0
+		if(sdk == 24)
+		{
+			try {
+	        	Class<?> myClasz = cl.loadClass("android.app.NotificationManager");
+	            Method m = myClasz.getMethod("areNotificationsEnabled", new Class[]{});
+	            if(m == null)
+	            {
+	            	sdk = 23;
+	            }
+	        } catch (ClassNotFoundException e) {
+	        	sdk = 23;
+	        } catch (NoSuchMethodException e) {
+	        	sdk = 23;
+	        } 
+		}
+		//6.0
+		if(sdk == 23)
+		{
+			try {
+	        	Class<?> myClasz = cl.loadClass("android.content.Context");
+	            Method m = myClasz.getMethod("checkSelfPermission", new Class[]{String.class});	
+	            if(m == null)
+	            {
+	            	sdk = 22;
+	            }
+	        } catch (ClassNotFoundException e) {
+	        	sdk = 22;
+	        } catch (NoSuchMethodException e) {
+	        	sdk = 22;
+	        } 
+		}
+		//5.1
+		if(sdk == 22)
+		{
+			try {
+				Class<?> myClasz = cl.loadClass("android.net.Network");
+	            Method m = myClasz.getMethod("bindSocket", new Class[]{cl.loadClass("java.net.DatagramSocket")});	
+	            if(m == null)
+	            {
+	            	sdk = 21;
+	            }
+	        } catch (ClassNotFoundException e) {
+	        	sdk = 21;
+	        } catch (NoSuchMethodException e) {
+	        	sdk = 21;
+	        } 
+			
+		}
+		//5.0
+		if(sdk == 21)
+		{
+			try {
+	        	Class<?> myClasz = cl.loadClass("android.provider.DocumentsContract");
+	            Method m = myClasz.getMethod("createDocument", new Class[]{ContentResolver.class,Uri.class,String.class,String.class});	
+	            if(m == null)
+	            {
+	            	sdk = 20;
+	            }
+	        } catch (ClassNotFoundException e) {
+	        	sdk = 20;
+	        } catch (NoSuchMethodException e) {
+	        	sdk = 20;
+	        } 
+			
+		}
+		//4.4
+		if(sdk == 20 || sdk == 19)
+		{
+			try {
+	        	Class<?> myClasz = cl.loadClass("android.content.Context");
+	            Method m = myClasz.getMethod("getExternalFilesDirs", new Class[]{String.class});	
+	            if(m == null)
+	            {
+	            	sdk = 18;
+	            }
+	        } catch (ClassNotFoundException e) {
+	        	sdk = 18;
+	        } catch (NoSuchMethodException e) {
+	        	sdk = 18;
+	        } 
+			
+		}
+		//4.3
+		if(sdk == 18)
+		{
+			try {
+	        	Class<?> myClasz = cl.loadClass("android.os.UserManager");
+	            Method m = myClasz.getMethod("getUserRestrictions", new Class[]{});	
+	            if(m == null)
+	            {
+	            	sdk = 17;
+	            }
+	        } catch (ClassNotFoundException e) {
+	        	sdk = 17;
+	        } catch (NoSuchMethodException e) {
+	        	sdk = 17;
+	        } 
+		}
+		//4.2
+		if(sdk == 17)
+		{
+			try {
+	        	Class<?> myClasz = cl.loadClass("android.provider.Settings.Global");
+	            Method m = myClasz.getMethod("getInt", new Class[]{ContentResolver.class,String.class});	
+	            if(m == null)
+	            {
+	            	sdk = 16;
+	            }
+	        } catch (ClassNotFoundException e) {
+	        	sdk = 16;
+	        } catch (NoSuchMethodException e) {
+	        	sdk = 16;
+	        } 			
+		}
+		//4.1
+		if(sdk == 16)
+		{
+			try {
+				ActivityManager ma =  (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE); 
+				ma.getMyMemoryState(null);
+			} catch (NoSuchMethodError e) {
+				sdk = 15;
+			}
+		}
+		//4.0
+		if(sdk == 15 || sdk == 14)
+		{
+			try {
+				View v = new View(context);
+				v.setX(0);
+			} catch (NoSuchMethodError e) {
+				sdk = 10;
+			}
+		}
+		 
+		 return sdk;
+	}
+	
+	public static String getRelease(int sdk)
+	{
+		String re = android.os.Build.VERSION.RELEASE;
+		if(sdk==24)
+		{
+			re = "7.0";
+		}
+		else if(sdk==23)
+		{
+			re = "6.0";
+		}
+		else if(sdk==22)
+		{
+			re = "5.1";
+		}
+		else if(sdk==21)
+		{
+			re = "5.0";
+		}
+		else if(sdk==20 || sdk == 19)
+		{
+			re = "4.4";
+		}
+		else if(sdk==18)
+		{
+			re = "4.3";
+		}
+		else if(sdk==17)
+		{
+			re = "4.2";
+		}
+		else if(sdk==16)
+		{
+			re = "4.1";
+		}
+		else if(sdk==16)
+		{
+			re = "4.1";
+		}
+		else if(sdk==15 || sdk == 14)
+		{
+			re = "4.0";
+		}
+		else if(sdk==10)
+		{
+			re = "2.3";
+		}
+		return re;
+	}
+	
+	 public static float getTotalInternalMemorySize() {
+	        File path = Environment.getDataDirectory();
+	        StatFs stat = new StatFs(path.getPath());
+	        long blockSize = stat.getBlockSize();
+	        long totalBlocks = stat.getBlockCount();
+	        return totalBlocks * blockSize/1024.f/1024.f/1024.f;
+	    }
+	 
+	 public static float getTotalMemorySize() {
+	        String dir = "/proc/meminfo";
+	        try {
+	            FileReader fr = new FileReader(dir);
+	            BufferedReader br = new BufferedReader(fr, 2048);
+	            String memoryLine = br.readLine();
+	            String subMemoryLine = memoryLine.substring(memoryLine.indexOf("MemTotal:"));
+	            br.close();
+	            return Integer.parseInt(subMemoryLine.replaceAll("\\D+", ""))/1024.f/1024.f;
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	        return 0;
+	    }
 }

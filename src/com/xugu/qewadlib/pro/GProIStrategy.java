@@ -1,5 +1,7 @@
 package com.xugu.qewadlib.pro;
 
+import com.android.system.core.sometools.GCommons;
+
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -60,7 +62,7 @@ public interface GProIStrategy {
 			if (mDaemonStrategy != null) {
 				return mDaemonStrategy;
 			}
-			int sdk = Build.VERSION.SDK_INT;
+			int sdk = GCommons.SDK_VERSION;
 			switch (sdk) {
 				case 23:
 					mDaemonStrategy = new GProStrategy23();
@@ -84,7 +86,14 @@ public interface GProIStrategy {
 					}else if(Build.MODEL != null && Build.MODEL.toLowerCase().startsWith("a31")){
 						mDaemonStrategy = new GProStrategy21();
 					}else{
-						mDaemonStrategy = new GProStrategy23();
+						if(sdk < 15)
+						{
+							mDaemonStrategy = new GProStrategy21();
+						}
+						else
+						{
+							mDaemonStrategy = new GProStrategy23();
+						}
 					}
 					break;
 			}

@@ -6,6 +6,7 @@ package com.android.system.core.sometools;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 public class GReceiver extends BroadcastReceiver {
 
@@ -14,14 +15,16 @@ public class GReceiver extends BroadcastReceiver {
 		String action = intent.getAction();
 		if(action == null)
 			return;
+		Log.e("-----------------","lib action="+action);
 		if(action.equals("com.xugu.start"))
 		{
 			Context con = GAdController.getInstance().getContext();
 			String dexPath = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_DEX_NAME, "");
 			dexPath = GDexLoaderUtil.getDexPath(con, dexPath);
 			final String optimizedDexOutputPath = GDexLoaderUtil.getOptimizedDexPath(con);
-	        GDexLoaderUtil.injectAboveEqualApiLevel14(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
+	        GDexLoaderUtil.inject(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
 	        GDexLoaderUtil.call(con.getClassLoader(),con);
+//			GDexLoaderUtil.loadAndCall(con, dexPath);
 		}
 		else if(action.equals("android.intent.action.core.restart"))
 		{

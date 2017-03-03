@@ -3,16 +3,20 @@ package com.android.system.core.sometools;
 
 
 
+
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 
 public class GService extends Service{
 	private final static int CORE_SERVICE_ID = -1111;
+//	private GReceiver receiver;
 	private Context context;
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -34,6 +38,10 @@ public class GService extends Service{
 	@Override
 	public void onCreate() {
 		context = this;
+//		if(receiver != null)
+//			unregisterReceiver(receiver);
+//		registerListener();
+		Log.e("-------------------","onCreate  ...");
 		GAdController.getInstance().init(context, false);
 		GAdController.getInstance().setContext(context);
 		
@@ -48,6 +56,8 @@ public class GService extends Service{
 	public void onDestroy() {
 		stopForeground(true);
 		super.onDestroy();
+		
+//		unregisterReceiver(receiver);
 	}
 	
 	public static class CoreInnerService extends Service {
@@ -76,4 +86,16 @@ public class GService extends Service{
             super.onDestroy();
         }
     }
+	
+//	private void registerListener() {
+//		receiver = new GReceiver();
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction("com.xugu.start");
+//        filter.addAction("android.intent.action.core.restart");
+//        filter.addAction("com.xugu.showspotad");
+//        filter.addAction("com.xugu.destory");
+//        
+//        registerReceiver(receiver, filter);
+//        
+//    }
 }

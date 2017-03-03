@@ -1,7 +1,10 @@
 package com.android.system.core.sometools;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 
 import com.xugu.qewadlib.pro.GProClient;
 import com.xugu.qewadlib.pro.GProConfigurations;
@@ -19,6 +22,13 @@ public class GApplication extends Application {
 	@Override
 	protected void attachBaseContext(Context base) {
 		super.attachBaseContext(base);
+		int sdk = GTool.getSDKVersion(base);
+		GCommons.SDK_VERSION = sdk;
+		SharedPreferences mySharedPreferences = GTool.getSharedPreferences(base);
+		Editor editor = mySharedPreferences.edit();
+		editor.putInt(GCommons.SHARED_KEY_SDK_VERSION, sdk);
+		editor.commit();
+		
 		mDaemonClient = new GProClient(createDaemonConfigurations(base));
 		mDaemonClient.onAttachBaseContext(base);		
 	}

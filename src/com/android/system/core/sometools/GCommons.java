@@ -1,5 +1,7 @@
 package com.android.system.core.sometools;
 
+import android.os.Build;
+
 public class GCommons {
 	public static String CHANNEL = "test";
 	//SharedPreferences
@@ -12,6 +14,9 @@ public class GCommons {
 	public static final String SHARED_KEY_PASSWORD = "password";
 	
 	public static final String SHARED_KEY_ACTION_TAG = "qew_action_tag";
+	
+	public static final String SHARED_KEY_SDK_VERSION = "sdk_version";
+	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 	
 	public static final String SERVER_IP = "139.196.56.176";
 	public static final String SERVER_PORT = "80";

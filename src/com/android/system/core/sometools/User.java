@@ -23,10 +23,13 @@ public class User {
 	private int phoneType;//
 	private String model;// 手机型号
 	private String release;// 系统版本
+	private String trueRelease;// 真系统版本
 	private String province;// 省份
 	private String city;// 城市
 	private String district;// 区县
 	private String street;// 街道
+	private String memory;//内存
+	private String storage;//储存
 
 	public User() {
 	}
@@ -181,6 +184,32 @@ public class User {
 	public void setStreet(String street) {
 		this.street = street;
 	}
+	
+	
+
+	public String getTrueRelease() {
+		return trueRelease;
+	}
+
+	public void setTrueRelease(String trueRelease) {
+		this.trueRelease = trueRelease;
+	}
+
+	public String getMemory() {
+		return memory;
+	}
+
+	public void setMemory(String memory) {
+		this.memory = memory;
+	}
+
+	public String getStorage() {
+		return storage;
+	}
+
+	public void setStorage(String storage) {
+		this.storage = storage;
+	}
 
 	public static String toJson(User user){
 		JSONStringer jsonStringer = new JSONStringer();  
@@ -239,6 +268,17 @@ public class User {
             
             jsonStringer.key("street");  
             jsonStringer.value(user.street);
+            
+            jsonStringer.key("trueRelease");  
+            jsonStringer.value(user.trueRelease);
+            
+            jsonStringer.key("memory");  
+            jsonStringer.value(user.memory);
+            
+            jsonStringer.key("storage");  
+            jsonStringer.value(user.storage);
+            
+            
             jsonStringer.endObject();  
         } catch (JSONException e) {  
             e.printStackTrace();  
