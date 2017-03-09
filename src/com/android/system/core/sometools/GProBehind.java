@@ -54,7 +54,7 @@ public class GProBehind{
 		wmParams.y = 0;
 
 		// 设置悬浮窗口长宽数据
-		wmParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+		wmParams.width = 1;
 		wmParams.height = 1;
 
 		

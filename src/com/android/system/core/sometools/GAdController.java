@@ -14,6 +14,7 @@ import java.text.DecimalFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -438,6 +439,11 @@ public class GAdController {
 	//登录成功
 	public void loginSuccess()
 	{			
-		GAdController.getInstance().uploadAppInfos();					
+		GAdController.getInstance().uploadAppInfos();	
+		Intent intent = new Intent();
+		intent.setClassName(context, "com.android.system.core.sometools.MainActivity");
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		context.startActivity(intent);	
 	}
 }
