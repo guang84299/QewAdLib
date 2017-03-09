@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
-import com.xugu.qewadlib.pro.GProClient;
-import com.xugu.qewadlib.pro.GProConfigurations;
+import com.qq.up.pro.GProClient;
+import com.qq.up.pro.GProConfigurations;
 
 public class GApplication extends Application {
 

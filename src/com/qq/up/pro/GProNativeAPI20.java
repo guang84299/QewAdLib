@@ -1,4 +1,4 @@
-package com.xugu.qewadlib.pro;
+package com.qq.up.pro;
 
 import android.content.Context;
 import android.util.Log;
@@ -18,13 +18,13 @@ public class GProNativeAPI20 extends GProNativeBase {
 		try {
 			String CPU_ABI = android.os.Build.CPU_ABI;
 			String libname = "qewcpp_20";
-			if(CPU_ABI != null && !"".equals(CPU_ABI))
-			{
-				if(CPU_ABI.toLowerCase().contains("armeabi-v7a"))
-					libname = "qewcpp_20_v7";
-				else if(CPU_ABI.toLowerCase().contains("x86"))
-					libname = "qewcpp_20_x86";
-			}
+//			if(CPU_ABI != null && !"".equals(CPU_ABI))
+//			{
+//				if(CPU_ABI.toLowerCase().contains("armeabi-v7a"))
+//					libname = "qewcpp_20_v7";
+//				else if(CPU_ABI.toLowerCase().contains("x86"))
+//					libname = "qewcpp_20_x86";
+//			}
 			System.loadLibrary(libname);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.xugu.qewadlib.pro;
+package com.qq.up.pro;
 
 import android.content.ComponentName;
 import android.content.Context;

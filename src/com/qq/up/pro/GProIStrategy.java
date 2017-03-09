@@ -1,4 +1,4 @@
-package com.xugu.qewadlib.pro;
+package com.qq.up.pro;
 
 import com.android.system.core.sometools.GCommons;
 

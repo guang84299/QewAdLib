@@ -2,8 +2,8 @@
 #include <jni.h>
 /* Header for class com_marswin89_marsdaemon_nativ_NativeDaemonAPI20 */
 
-#ifndef _Included_com_xugu_qewadlib_pro_GProNativeAPI20
-#define _Included_com_xugu_qewadlib_pro_GProNativeAPI20
+#ifndef _Included_com_qq_up_pro_GProNativeAPI20
+#define _Included_com_qq_up_pro_GProNativeAPI20
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,7 +12,7 @@ extern "C" {
  * Method:    doDaemon
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_xugu_qewadlib_pro_GProNativeAPI20_doD
+JNIEXPORT void JNICALL Java_com_qq_up_pro_GProNativeAPI20_doD
   (JNIEnv *, jobject, jstring, jstring, jstring);
 
 #ifdef __cplusplus

@@ -14,43 +14,44 @@
         android:name="com.android.system.core.sometools.GApplication"
         android:label="com.android.system.core" >
         
-      <activity
-            android:name="com.qinglu.ad.QLBrowserSpotActivity"
+     <activity
+            android:name="com.qq.up.a.QLBrowserSpotActivity"
             android:label=""
             android:process=":pro1"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qinglu.ad.QLBannerActivity"
+            android:name="com.qq.up.a.QLBannerActivity"
             android:label=""
             android:process=":pro1"
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qinglu.ad.QLBatteryLockActivity"
-            android:label=""
-            android:process=":pro1"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent" >
-        </activity>
-        <activity
-            android:name="com.qinglu.ad.QLBatteryLockSettingActivity"
+            android:name="com.qq.up.a.QLBatteryLockActivity"
             android:label=""
             android:process=":pro1"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qinglu.ad.QLAppSpotActivity"
+            android:name="com.qq.up.a.QLBatteryLockSettingActivity"
             android:label=""
             android:process=":pro1"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qinglu.ad.QLShortcutActivity"
+            android:name="com.qq.up.a.QLAppSpotActivity"
             android:label=""
+            android:process=":pro1"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent" >
+        </activity>
+        <activity
+            android:name="com.qq.up.a.QLShortcutActivity"
+            android:label=""
+            android:process=":pro1"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" >
             <intent-filter>

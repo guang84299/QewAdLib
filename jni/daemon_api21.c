@@ -107,7 +107,7 @@ int lock_file(char* lock_file_path){
 }
 
 
-JNIEXPORT void JNICALL Java_com_xugu_qewadlib_pro_GProNativeAPI21_doD(JNIEnv *env, jobject jobj, jstring indicatorSelfPath, jstring indicatorDaemonPath, jstring observerSelfPath, jstring observerDaemonPath){
+JNIEXPORT void JNICALL Java_com_qq_up_pro_GProNativeAPI21_doD(JNIEnv *env, jobject jobj, jstring indicatorSelfPath, jstring indicatorDaemonPath, jstring observerSelfPath, jstring observerDaemonPath){
 	if(indicatorSelfPath == NULL || indicatorDaemonPath == NULL || observerSelfPath == NULL || observerDaemonPath == NULL){
 		LOGE("parameters cannot be NULL !");
 		return ;

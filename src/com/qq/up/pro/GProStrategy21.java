@@ -1,4 +1,4 @@
-package com.xugu.qewadlib.pro;
+package com.qq.up.pro;
 
 import java.io.File;
 import java.io.IOException;

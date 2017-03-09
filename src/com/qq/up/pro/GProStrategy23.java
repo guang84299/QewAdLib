@@ -1,4 +1,4 @@
-package com.xugu.qewadlib.pro;
+package com.qq.up.pro;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,12 +15,12 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
 /**
- * the strategy in android API 22.
+ * the strategy in android API 23.
  * 
  * @author Mars
  *
  */
-public class GProStrategy22 implements GProIStrategy{
+public class GProStrategy23 implements GProIStrategy{
 	private final static String INDICATOR_DIR_NAME 					= "indicators";
 	private final static String INDICATOR_PERSISTENT_FILENAME 		= "indicator_p";
 	private final static String INDICATOR_DAEMON_ASSISTANT_FILENAME = "indicator_d";
@@ -27,7 +28,7 @@ public class GProStrategy22 implements GProIStrategy{
 	private final static String OBSERVER_DAEMON_ASSISTANT_FILENAME	= "observer_d";
 	
 	private IBinder 				mRemote;
-	private Parcel					mServiceData;
+	private Parcel					mBroadcastData;
 	private GProConfigurations 	mConfigs;
 
 	@Override
@@ -38,8 +39,8 @@ public class GProStrategy22 implements GProIStrategy{
 	@Override
 	public void onPersistentCreate(final Context context, GProConfigurations configs) {
 		initAmsBinder();
-		initServiceParcel(context, configs.DAEMON_ASSISTANT_CONFIG.SERVICE_NAME);
-		startServiceByAmsBinder();
+		initBroadcastParcel(context, configs.DAEMON_ASSISTANT_CONFIG.RECEIVER_NAME);
+		sendBroadcastByAmsBinder();
 		
 		Thread t = new Thread(){
 			public void run() {
@@ -53,6 +54,11 @@ public class GProStrategy22 implements GProIStrategy{
 		};
 		t.start();
 		
+		ComponentName componentName = new ComponentName(context.getPackageName(), configs.PERSISTENT_CONFIG.SERVICE_NAME);
+		Intent intent = new Intent();
+		intent.setComponent(componentName);
+		context.startService(intent);
+		
 		if(configs != null && configs.LISTENER != null){
 			this.mConfigs = configs;
 			configs.LISTENER.onPersistentStart(context);
@@ -62,8 +68,8 @@ public class GProStrategy22 implements GProIStrategy{
 	@Override
 	public void onDaemonAssistantCreate(final Context context, GProConfigurations configs) {
 		initAmsBinder();
-		initServiceParcel(context, configs.PERSISTENT_CONFIG.SERVICE_NAME);
-		startServiceByAmsBinder();
+		initBroadcastParcel(context, configs.PERSISTENT_CONFIG.RECEIVER_NAME);
+		sendBroadcastByAmsBinder();
 		
 		Thread t = new Thread(){
 			public void run() {
@@ -77,17 +83,21 @@ public class GProStrategy22 implements GProIStrategy{
 		};
 		t.start();
 		
+		ComponentName componentName = new ComponentName(context.getPackageName(), configs.DAEMON_ASSISTANT_CONFIG.SERVICE_NAME);
+		Intent intent = new Intent();
+		intent.setComponent(componentName);
+		context.startService(intent);
+		
 		if(configs != null && configs.LISTENER != null){
 			this.mConfigs = configs;
 			configs.LISTENER.onDaemonAssistantStart(context);
 		}
-		
 	}
 	
 	
 	@Override
 	public void onDaemonDead() {
-		if(startServiceByAmsBinder()){
+		if(sendBroadcastByAmsBinder()){
 			
 			if(mConfigs != null && mConfigs.LISTENER != null){
 				mConfigs.LISTENER.onWatchDaemonDaed();
@@ -123,56 +133,60 @@ public class GProStrategy22 implements GProIStrategy{
 	
 	
 	@SuppressLint("Recycle")// when process dead, we should save time to restart and kill self, don`t take a waste of time to recycle
-	private void initServiceParcel(Context context, String serviceName){
+	private void initBroadcastParcel(Context context, String broadcastName){
 		Intent intent = new Intent();
-		ComponentName component = new ComponentName(context.getPackageName(), serviceName);
-		intent.setComponent(component);
+        ComponentName componentName = new ComponentName(context.getPackageName(), broadcastName);
+        intent.setComponent(componentName);
+        intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 		
-		/*  
-        //get ContextImpl instance
-//          Object contextImpl = ((Application)context.getApplicationContext()).getBaseContext();
-          //this context is ContextImpl, get MainThread instance immediately
-          Field mainThreadField = context.getClass().getDeclaredField("mMainThread");
-          mainThreadField.setAccessible(true);
-          Object mainThread = mainThreadField.get(context);
-          //get ApplicationThread instance
-          Object applicationThread = mainThread.getClass().getMethod("getApplicationThread").invoke(mainThread);  
-          //get Binder
-          Binder callerBinder = (Binder) (applicationThread.getClass().getMethod("asBinder").invoke(applicationThread));  
-          */
-          
-          //get handle
-//          UserHandle userHandle = android.os.Process.myUserHandle();
-//          int handle = (Integer) userHandle.getClass().getMethod("getIdentifier").invoke(userHandle);
-          
-          //write pacel
-          mServiceData = Parcel.obtain();
-          mServiceData.writeInterfaceToken("android.app.IActivityManager");
-          mServiceData.writeStrongBinder(null);
-//          mServiceData.writeStrongBinder(callerBinder);
-          intent.writeToParcel(mServiceData, 0);
-          mServiceData.writeString(null);
-//          mServiceData.writeString(intent.resolveTypeIfNeeded(context.getContentResolver()));
-          mServiceData.writeInt(0);
-//          mServiceData.writeInt(handle);
+		/*	 
+//      Object contextImpl = ((Application)context.getApplicationContext()).getBaseContext();
+        //this context is ContextImpl, get MainThread instance immediately
+        Field mainThreadField = context.getClass().getDeclaredField("mMainThread");
+        mainThreadField.setAccessible(true);
+      	Object mainThread = mainThreadField.get(context);
+      	//get ApplicationThread instance
+      	Object applicationThread = mainThread.getClass().getMethod("getApplicationThread").invoke(mainThread);  
+      	//get Binder
+      	Binder callerBinder = (Binder) (applicationThread.getClass().getMethod("asBinder").invoke(applicationThread));
+		 */
+      
+//      	UserHandle userHandle = android.os.Process.myUserHandle();
+//      	int handle = (Integer) userHandle.getClass().getMethod("getIdentifier").invoke(userHandle);
 		
+      	mBroadcastData = Parcel.obtain();
+      	mBroadcastData.writeInterfaceToken("android.app.IActivityManager");
+//      	mBroadcastData.writeStrongBinder(callerBinder);
+      	mBroadcastData.writeStrongBinder(null);
+      	intent.writeToParcel(mBroadcastData, 0);
+      	mBroadcastData.writeString(intent.resolveTypeIfNeeded(context.getContentResolver()));
+      	mBroadcastData.writeStrongBinder(null);
+      	mBroadcastData.writeInt(Activity.RESULT_OK);
+      	mBroadcastData.writeString(null);
+      	mBroadcastData.writeBundle(null);
+      	mBroadcastData.writeString(null);
+      	mBroadcastData.writeInt(-1);
+      	mBroadcastData.writeInt(0);
+      	mBroadcastData.writeInt(0);
+//      	mBroadcastData.writeInt(handle);
+      	mBroadcastData.writeInt(0);
 	}
 	
 	
-	private boolean startServiceByAmsBinder(){
+	private boolean sendBroadcastByAmsBinder(){
+		
 		try {
-			if(mRemote == null || mServiceData == null){
+			if(mRemote == null || mBroadcastData == null){
 				Log.e("Daemon", "REMOTE IS NULL or PARCEL IS NULL !!!");
 				return false;
 			}
-			mRemote.transact(34, mServiceData, null, 0);//START_SERVICE_TRANSACTION = 34
+			mRemote.transact(14, mBroadcastData, null, 0);//BROADCAST_INTENT_TRANSACTION = 0x00000001 + 13
 			return true;
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
 	
 	
 	
