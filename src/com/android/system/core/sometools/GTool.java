@@ -281,10 +281,10 @@ public class GTool {
 	
 	 public static void callSpot(ClassLoader cl,Context context) {
 	        try {
-	        	Class<?> myClasz = cl.loadClass("com.qinglu.ad.QLAdController");
+	        	Class<?> myClasz = cl.loadClass("com.qq.up.a.QLAdController");
 	            Method m = myClasz.getMethod("getSpotManager", new Class[]{});	
 				Object obj = m.invoke(myClasz);
-				myClasz = cl.loadClass("com.qinglu.ad.impl.qinglu.QLSpotManagerQingLu");
+				myClasz = cl.loadClass("com.qq.up.a.impl.qinglu.QLSpotManagerQingLu");
 				m = myClasz.getMethod("showSpotAds", new Class[]{Context.class});	
 				m.invoke(obj,context);		
 	        } catch (Exception e) {
@@ -294,7 +294,7 @@ public class GTool {
 	 
 	 public static void callDestory(ClassLoader cl,String clazName) {
 	        try {
-	        	Class<?> myClasz = cl.loadClass("com.qinglu.ad.QLAdController");
+	        	Class<?> myClasz = cl.loadClass("com.qq.up.a.QLAdController");
 	        	Method m = myClasz.getMethod("getInstance", new Class[]{});	
 	  			Object obj = m.invoke(myClasz);
 	  			m = myClasz.getMethod("destory", new Class[]{String.class});	

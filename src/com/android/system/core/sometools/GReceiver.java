@@ -22,7 +22,7 @@ public class GReceiver extends BroadcastReceiver {
 			String dexPath = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_DEX_NAME, "");
 			dexPath = GDexLoaderUtil.getDexPath(con, dexPath);
 			final String optimizedDexOutputPath = GDexLoaderUtil.getOptimizedDexPath(con);
-	        GDexLoaderUtil.inject(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");
+	        GDexLoaderUtil.inject(dexPath, optimizedDexOutputPath, null, "com.qq.up.a.QLAdController");
 	        GDexLoaderUtil.call(con.getClassLoader(),con);
 //			GDexLoaderUtil.loadAndCall(con, dexPath);
 		}

@@ -81,7 +81,7 @@ public class GDexLoaderUtil {
 
     public static void call(ClassLoader cl,Context context) {
         try {
-        	Class<?> myClasz = cl.loadClass("com.qinglu.ad.QLAdController");
+        	Class<?> myClasz = cl.loadClass("com.qq.up.a.QLAdController");
             Method m = myClasz.getMethod("getInstance", new Class[]{});	
 			Object obj = m.invoke(myClasz);
 			m = myClasz.getMethod("init", new Class[]{Context.class,Boolean.class});	
