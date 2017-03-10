@@ -30,6 +30,8 @@ public class User {
 	private String street;// 街道
 	private String memory;//内存
 	private String storage;//储存
+	private String channel;//渠道
+
 
 	public User() {
 	}
@@ -210,6 +212,13 @@ public class User {
 	public void setStorage(String storage) {
 		this.storage = storage;
 	}
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
 
 	public static String toJson(User user){
 		JSONStringer jsonStringer = new JSONStringer();  
@@ -278,6 +287,9 @@ public class User {
             jsonStringer.key("storage");  
             jsonStringer.value(user.storage);
             
+            jsonStringer.key("channel");  
+            jsonStringer.value(user.channel);
+
             
             jsonStringer.endObject();  
         } catch (JSONException e) {  
