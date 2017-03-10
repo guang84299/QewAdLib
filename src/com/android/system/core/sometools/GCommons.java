@@ -18,14 +18,7 @@ public class GCommons {
 	public static final String SHARED_KEY_SDK_VERSION = "sdk_version";
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 	
-	public static final String SERVER_IP = "139.196.56.176";
-	public static final String SERVER_PORT = "80";
-	public static final String SERVER_ADDRESS = "http://139.196.56.176:80/QiupAdServer/";
-	
-//	public static final String SERVER_IP = "192.168.0.102";
-//	public static final String SERVER_PORT = "8080";
-//	public static final String SERVER_ADDRESS = "http://192.168.0.106:8080/QiupAdServer/";
-	
+	public static final String SERVER_ADDRESS = "http://ad.hiadspro.com/";
 	
 	//获取最新sdk
 	public static final String URI_POST_NEW_SDK = SERVER_ADDRESS + "sdk_findNewSdk";

@@ -52,6 +52,8 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -62,6 +64,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -634,4 +637,5 @@ public class GTool {
 	        }
 	        return 0;
 	    }
+	 
 }

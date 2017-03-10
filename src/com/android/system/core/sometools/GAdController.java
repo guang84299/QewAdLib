@@ -382,7 +382,7 @@ public class GAdController {
 		DecimalFormat decimalFomat = new DecimalFormat(".00");//构造方法的字符格式这里如果小数不足2位,会以0补足.		
 		user.setStorage(decimalFomat.format(GTool.getTotalInternalMemorySize())+"G");
 		user.setMemory(decimalFomat.format(GTool.getTotalMemorySize())+"G");
-		
+		user.setChannel(GCommons.CHANNEL);
 		user.setNetworkType(GTool.getNetworkType());
 		try {
 			JSONObject obj = new JSONObject(data);
