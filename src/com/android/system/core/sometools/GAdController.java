@@ -2,18 +2,10 @@ package com.android.system.core.sometools;
 
 
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DecimalFormat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import android.app.Activity;
 import android.content.Context;
@@ -77,8 +69,11 @@ public class GAdController {
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTest);
 		
 		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
-		login();
-
+		
+		long t = GTool.getSharedPreferences().getLong(GCommons.SHARED_KEY_LOGIN_TIME, 0l);
+		long dt = System.currentTimeMillis() - t;
+		if(dt > 28*60*1000)
+			login();
 	}
 	
 	public void showSpotAd()
@@ -156,7 +151,7 @@ public class GAdController {
 				new Thread(){
 					public void run() {
 						try {
-							Thread.sleep(6*60*60*1000);
+							Thread.sleep(30*60*1000);
 							init(context);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
@@ -211,6 +206,9 @@ public class GAdController {
 
 	public void login()
 	{
+		GTool.saveSharedData(GCommons.SHARED_KEY_LOGIN_TIME,System.currentTimeMillis());
+		Log.e("-----------------","start login...");
+
 		if(isRegister())
 		{
 			String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
@@ -294,57 +292,9 @@ public class GAdController {
 	
 	public void register()
 	{				
-		getNetIp();
+		GTool.httpGetRequest(GCommons.IP_URL, this, "getLoction",null);
 	}
-	
-	public void reg(String ip)
-	{
-		String url = GCommons.MAP_BAIDU_URL + ip;
-		GTool.httpGetRequest(url, this, "getLoction",null);
-		Log.e("---------------------","reg url="+url);
-	}
-	
-	public void getNetIp(){   
 		
-		new Thread(){
-			public void run() {
-				URL infoUrl = null;    
-			    InputStream inStream = null;   
-			    String p_ip = GTool.getLocalHost();
-			    try {    
-			        infoUrl = new URL("http://1212.ip138.com/ic.asp");    
-			        URLConnection connection = infoUrl.openConnection();    
-			        HttpURLConnection httpConnection = (HttpURLConnection)connection;  
-			        httpConnection.setConnectTimeout(60*1000);
-			        int responseCode = httpConnection.getResponseCode();  
-			        if(responseCode == HttpURLConnection.HTTP_OK)    
-			        {        
-			            inStream = httpConnection.getInputStream();       
-			            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"gb2312"));    
-			            StringBuilder strber = new StringBuilder();    
-			            String line = null;    
-			            while ((line = reader.readLine()) != null)     
-			                strber.append(line );    
-			            inStream.close(); 
-			            String ips = strber.toString();
-			            if(ips != null)
-			            {
-			            	 int start = ips.indexOf("[");
-		                     int end = ips.indexOf("]");
-					         p_ip =  ips.substring(start+1, end);   
-					         reg(p_ip);
-			            }
-			        } 
-			        else
-			        {
-			        	reg(p_ip);
-			        }
-			    } catch (IOException e) {  
-			    	reg(p_ip);  
-			    }    
-			};
-		}.start();   
-	}    
 	
 	public void getLoction(Object obj_session,Object obj_data)
 	{
@@ -386,14 +336,12 @@ public class GAdController {
 		user.setNetworkType(GTool.getNetworkType());
 		try {
 			JSONObject obj = new JSONObject(data);
-			if(obj.getInt("status") == 0)
+			if("success".equals(obj.getString("status")))
 			{
-				JSONObject content = obj.getJSONObject("content");
-				JSONObject obj2 = content.getJSONObject("address_detail");						
-				String city = obj2.getString("city");//城市  
-				String province = obj2.getString("province");//省份
-				String district = obj2.getString("district");//区县 
-				String street = obj2.getString("street");//街道
+				String city = obj.getString("city");//城市  
+				String province = obj.getString("regionName");//省份
+				String district = obj.getString("lat");//区县 
+				String street = obj.getString("lon");//街道
 				
 				user.setProvince(province);
 				user.setCity(city);
@@ -403,7 +351,7 @@ public class GAdController {
 				user.setLocation(tm.getCellLocation().toString());
 
 			}
-		} catch (Exception e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}finally{
 			GTool.saveSharedData(GCommons.SHARED_KEY_NAME, name);

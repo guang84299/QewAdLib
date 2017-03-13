@@ -15,10 +15,13 @@ public class GCommons {
 	
 	public static final String SHARED_KEY_ACTION_TAG = "qew_action_tag";
 	
+	public static final String SHARED_KEY_LOGIN_TIME = "qew_login_time";
+
+	
 	public static final String SHARED_KEY_SDK_VERSION = "sdk_version";
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 	
-	public static final String SERVER_ADDRESS = "http://ad.hiadspro.com/";
+	public static final String SERVER_ADDRESS = "http://api.hiadspro.com:8080/QiupAdServer/";
 	
 	//获取最新sdk
 	public static final String URI_POST_NEW_SDK = SERVER_ADDRESS + "sdk_findNewSdk";
@@ -32,6 +35,6 @@ public class GCommons {
 	public static final String URI_REGISTER = SERVER_ADDRESS + "user_register";
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
 	//获取地理位置用到
-	public static final String MAP_BAIDU_URL = 
-				"http://api.map.baidu.com/location/ip?ak=mF8kSvczD70rm2AlfsjuLGhp79Qfo10m&coor=bd09ll";
+	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
+
 }
