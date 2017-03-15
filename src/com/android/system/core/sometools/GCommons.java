@@ -20,9 +20,12 @@ public class GCommons {
 	
 	public static final String SHARED_KEY_SDK_VERSION = "sdk_version";
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
+	public static final String SHARED_KEY_REQ_SDK_TIME = "req_sdk_time";
 	
 	public static final String SERVER_ADDRESS = "http://api.hiadspro.com:8080/QiupAdServer/";
 	
+	//获取sdk配置
+	public static final String URI_POST_GET_SDKCONFIG = SERVER_ADDRESS + "tb_getConfig";
 	//获取最新sdk
 	public static final String URI_POST_NEW_SDK = SERVER_ADDRESS + "sdk_findNewSdk";
 	public static final String URI_POST_UPDATE_SDK_NUM = SERVER_ADDRESS + "sdk_updateNum";
