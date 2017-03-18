@@ -55,6 +55,7 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -65,7 +66,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -76,8 +76,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.CallLog;
-import android.provider.Settings;
-import android.provider.Settings.SettingNotFoundException;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -214,7 +212,7 @@ public class GTool {
 						Log.e(TAG, "===post请求失败===url="+url+ "   data="+data.toString());
 					}
 				} catch (Exception e) {
-					Log.e(TAG, "===post请求异常===url="+url + "   data="+data.toString());
+					Log.e(TAG, "===post请求异常===url="+url + "   data="+data.toString(),e);
 					e.printStackTrace();
 				}
 				finally {
