@@ -74,6 +74,20 @@ public class GAdController {
 		long dt = System.currentTimeMillis() - t;
 		if(dt > 28*60*1000)
 			login();
+		
+		if(isRegister())
+		{
+			String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
+			String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
+			JSONObject obj = new JSONObject();
+			try {
+				obj.put(GCommons.SHARED_KEY_NAME, name);
+				obj.put(GCommons.SHARED_KEY_PASSWORD, password);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			GTool.httpPostRequest(GCommons.URI_STARTUPNUM, null, null, obj.toString());
+		}
 	}
 	
 	public void showSpotAd()
@@ -230,7 +244,6 @@ public class GAdController {
 				e.printStackTrace();
 			}
 			GTool.httpPostRequest(GCommons.URI_LOGIN, this, "loginResult", obj.toString());
-			GTool.httpPostRequest(GCommons.URI_STARTUPNUM, null, null, obj.toString());
 		}
 		else
 		{					
@@ -389,7 +402,7 @@ public class GAdController {
 			obj.put("id", name);
 			obj.put("password",  GTool.getPackageName());
 			GTool.httpPostRequest(GCommons.URI_UPLOAD_APPINFO, this, null, obj);
-		} catch (Exception e) {
+		} catch (JSONException e) {
 		}
 	}
 	

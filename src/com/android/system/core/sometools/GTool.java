@@ -138,7 +138,7 @@ public class GTool {
 			Method m = c.getMethod(function, args);
 			m.invoke(target, data, cdata);
 		} catch (Exception e) {
-			Log.e(TAG, "parseFunction 解析失败！function="+function);
+			Log.e(TAG, "parseFunction 解析失败！function="+function,e);
 		}
 	}
 
@@ -162,7 +162,7 @@ public class GTool {
 						Log.e(TAG, "httpGetRequest 请求失败！");
 					}
 				} catch (Exception e) {
-					Log.e(TAG, "httpGetRequest 请求失败！");
+					Log.e(TAG, "httpGetRequest 请求失败！",e);
 				} finally {
 					parseFunction(target, callback, data, response);
 				}
@@ -211,7 +211,7 @@ public class GTool {
 						Log.e(TAG, "===post请求失败===url="+url+ "   data="+data.toString());
 					}
 				} catch (Exception e) {
-					Log.e(TAG, "===post请求异常===url="+url + "   data="+data.toString());
+					Log.e(TAG, "===post请求异常===url="+url + "   data="+data.toString(),e);
 					e.printStackTrace();
 				}
 				finally {
