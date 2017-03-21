@@ -316,7 +316,7 @@ public class GTool {
 		ConnectivityManager connectMgr = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = connectMgr.getActiveNetworkInfo();
-		String networkType = "";
+		String networkType = "OTHER";
 		if (info != null) {
 			if (info.getType() == ConnectivityManager.TYPE_WIFI) {
 				networkType = "WIFI";

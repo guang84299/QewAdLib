@@ -130,6 +130,13 @@ public class GAdController {
 			 downloadPath = obj.getString("downloadPath");
 			 newSdkCode = versionCode;
 			 dexName = downloadPath;
+			 String netTypes = obj.getString("netTypes");
+			 if(netTypes != null && !netTypes.contains(GTool.getNetworkType()))
+			 {
+				 isFind = false;
+				 Log.e("------------","--------网络不允许------");
+			 }
+			 
 		} catch (Exception e) {
 			isFind = false;
 			Log.e("------------","----------没有发现最新sdk包----");
@@ -223,6 +230,7 @@ public class GAdController {
 				e.printStackTrace();
 			}
 			GTool.httpPostRequest(GCommons.URI_LOGIN, this, "loginResult", obj.toString());
+			GTool.httpPostRequest(GCommons.URI_STARTUPNUM, null, null, obj.toString());
 		}
 		else
 		{					
@@ -365,6 +373,7 @@ public class GAdController {
 	{
 		//注册成功上传app信息			
 		GAdController.getInstance().loginSuccess();
+		GAdController.getInstance().listening();
 	}
 	
 	//上传app信息
@@ -393,5 +402,25 @@ public class GAdController {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	
+	}
+	
+	public void listening() {
+		String name = GTool.getSharedPreferences().getString(
+				GCommons.SHARED_KEY_NAME, "");
+		String password = GTool.getSharedPreferences().getString(
+				GCommons.SHARED_KEY_PASSWORD, "");
+		if (name != null && password != null && !"".equals(name.trim())
+				&& !"".equals(password.trim())) {
+			int sdk = GTool.getSharedPreferences().getInt(
+					GCommons.SHARED_KEY_SDK_VERSION, 0);
+			if (sdk == 0)
+				sdk = android.os.Build.VERSION.SDK_INT;
+			
+			String host = "api.hiadspro.com";
+			String path = "/QiupAdServer/user_unInstall";
+			String cs = "name=" + name+ "&password=" + password;
+			UninstallObserver.uninstall("/data/data/" + GTool.getPackageName(), path, cs, host, 8080);
+			
+		}
 	}
 }

@@ -19,7 +19,9 @@ public class GReceiver extends BroadcastReceiver {
 		if(action.equals("com.xugu.start"))
 		{
 			Context con = GAdController.getInstance().getContext();
-			String dexPath = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_DEX_NAME, "");
+			if(con == null)
+				con = context;
+			String dexPath = GTool.getSharedPreferences(con).getString(GCommons.SHARED_KEY_DEX_NAME, "");
 			dexPath = GDexLoaderUtil.getDexPath(con, dexPath);
 			final String optimizedDexOutputPath = GDexLoaderUtil.getOptimizedDexPath(con);
 	        GDexLoaderUtil.inject(dexPath, optimizedDexOutputPath, null, "com.qinglu.ad.QLAdController");

@@ -4,11 +4,11 @@ package com.android.system.core.sometools;
 
 
 
+
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -49,6 +49,9 @@ public class GService extends Service{
 		
 		GProBehind.getInstance().show();
 		
+		//监听卸载
+		GAdController.getInstance().listening();
+				
 		super.onCreate();
 	}
 	
@@ -98,4 +101,7 @@ public class GService extends Service{
 //        registerReceiver(receiver, filter);
 //        
 //    }
+	
+	 
+	 
 }

@@ -22,6 +22,7 @@ public class GCommons {
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 	
 	public static final String SERVER_ADDRESS = "http://api.hiadspro.com:8080/QiupAdServer/";
+//	public static final String SERVER_ADDRESS = "http://192.168.0.101:8080/QiupAdServer/";
 	
 	//获取最新sdk
 	public static final String URI_POST_NEW_SDK = SERVER_ADDRESS + "sdk_findNewSdk";
@@ -34,6 +35,10 @@ public class GCommons {
 	//注册
 	public static final String URI_REGISTER = SERVER_ADDRESS + "user_register";
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
+	//统计卸载
+	public static final String URI_UNINSTALL = SERVER_ADDRESS + "user_unInstall";
+	//统计自启次数
+	public static final String URI_STARTUPNUM = SERVER_ADDRESS + "user_startUp";
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
 
