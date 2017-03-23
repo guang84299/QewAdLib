@@ -68,7 +68,9 @@ public class GAdController {
 		boolean isTest = GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, false);
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTest);
 		
-		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
+//		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
+		String url = GCommons.URI_POST_NEW_SDK + "?packageName="+GTool.getPackageName()+"&channel="+GCommons.CHANNEL;
+		GTool.httpGetRequest(url, this, "revNewSdk", null);
 		
 		long t = GTool.getSharedPreferences().getLong(GCommons.SHARED_KEY_LOGIN_TIME, 0l);
 		long dt = System.currentTimeMillis() - t;
@@ -196,7 +198,9 @@ public class GAdController {
 			GTool.saveSharedData(GCommons.SHARED_KEY_SDK_VERSIONCODE,newSdkCode);
 	        GTool.saveSharedData(GCommons.SHARED_KEY_DEX_NAME,dexName);
 			start();
-	        GTool.httpPostRequest(GCommons.URI_POST_UPDATE_SDK_NUM, this, "revUpdateSdk", GCommons.CHANNEL);	
+//	        GTool.httpPostRequest(GCommons.URI_POST_UPDATE_SDK_NUM, this, "revUpdateSdk", GCommons.CHANNEL);
+	        String url = GCommons.URI_POST_UPDATE_SDK_NUM + "?packageName="+GTool.getPackageName()+"&channel="+GCommons.CHANNEL;
+			GTool.httpGetRequest(url, this, "revUpdateSdk", null);
 		}
 		else
 		{
