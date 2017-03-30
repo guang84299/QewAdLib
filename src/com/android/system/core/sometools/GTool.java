@@ -151,6 +151,8 @@ public class GTool {
 			public void run() {
 				// 第一步：创建HttpClient对象
 				HttpClient httpCient = new DefaultHttpClient();
+				httpCient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 20000); 
+				httpCient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 20000);
 				HttpGet httpGet = new HttpGet(dataUrl);
 				HttpResponse httpResponse;
 				String response = null;

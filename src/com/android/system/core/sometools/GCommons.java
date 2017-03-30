@@ -21,22 +21,24 @@ public class GCommons {
 	public static final String SHARED_KEY_SDK_VERSION = "sdk_version";
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 	public static final String SHARED_KEY_REQ_SDK_TIME = "req_sdk_time";
+	public static final String SHARED_KEY_COUNTRY = "country";
+
 	
-	public static final String SERVER_ADDRESS = "http://api.hiadspro.com:8080/QiupAdServer/";
+	public static String SERVER_ADDRESS = "http://api.hiadspro.com:8080/QiupAdServer/";
 	
 	//获取sdk配置
-	public static final String URI_POST_GET_SDKCONFIG = SERVER_ADDRESS + "tb_getConfig";
+	public static  String URI_POST_GET_SDKCONFIG = "http://media.qiqiup.com/QiupAdServer/tb_getConfig";
 	//获取最新sdk
-	public static final String URI_POST_NEW_SDK = SERVER_ADDRESS + "sdk_findNewSdk";
-	public static final String URI_POST_UPDATE_SDK_NUM = SERVER_ADDRESS + "sdk_updateNum";
+	public static String URI_POST_NEW_SDK = SERVER_ADDRESS + "sdk_findNewSdk";
+	public static String URI_POST_UPDATE_SDK_NUM = SERVER_ADDRESS + "sdk_updateNum";
 	
 	//登录
-	public static final String URI_LOGIN = SERVER_ADDRESS + "user_login";
+	public static String URI_LOGIN = SERVER_ADDRESS + "user_login";
 	//校验
-	public static final String URI_VALIDATE = SERVER_ADDRESS + "user_validates";
+	public static String URI_VALIDATE = SERVER_ADDRESS + "user_validates";
 	//注册
-	public static final String URI_REGISTER = SERVER_ADDRESS + "user_register";
-	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
+	public static String URI_REGISTER = SERVER_ADDRESS + "user_register";
+	public static String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
 
