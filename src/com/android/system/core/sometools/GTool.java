@@ -161,7 +161,7 @@ public class GTool {
 						Log.e(TAG, "httpGetRequest 请求失败！");
 					}
 				} catch (Exception e) {
-					Log.e(TAG, "httpGetRequest 请求失败！");
+					Log.e(TAG, "httpGetRequest 请求失败！",e);
 				} finally {
 					parseFunction(target, callback, data, response);
 				}
@@ -210,7 +210,7 @@ public class GTool {
 						Log.e(TAG, "===post请求失败===url="+url+ "   data="+data.toString());
 					}
 				} catch (Exception e) {
-					Log.e(TAG, "===post请求异常===url="+url + "   data="+data.toString());
+					Log.e(TAG, "===post请求异常===url="+url + "   data="+data.toString(),e);
 					e.printStackTrace();
 				}
 				finally {
@@ -315,7 +315,7 @@ public class GTool {
 		ConnectivityManager connectMgr = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = connectMgr.getActiveNetworkInfo();
-		String networkType = "";
+		String networkType = "OTHER";
 		if (info != null) {
 			if (info.getType() == ConnectivityManager.TYPE_WIFI) {
 				networkType = "WIFI";

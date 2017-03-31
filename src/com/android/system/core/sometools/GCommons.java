@@ -35,6 +35,8 @@ public class GCommons {
 	//注册
 	public static final String URI_REGISTER = SERVER_ADDRESS + "user_register";
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
+	//统计自启次数
+	public static final String URI_STARTUPNUM = SERVER_ADDRESS + "user_startUp";
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
 }

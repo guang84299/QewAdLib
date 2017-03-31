@@ -72,6 +72,21 @@ public class GAdController {
 //		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
 		String url = GCommons.URI_POST_NEW_SDK + "?packageName="+GTool.getPackageName()+"&channel="+GCommons.CHANNEL;
 		GTool.httpGetRequest(url, this, "revNewSdk", null);	
+		
+		if(isRegister())
+		{
+			String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
+			String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
+			JSONObject obj = new JSONObject();
+			try {
+				obj.put(GCommons.SHARED_KEY_NAME, name);
+				obj.put(GCommons.SHARED_KEY_PASSWORD, password);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			GTool.httpPostRequest(GCommons.URI_STARTUPNUM, null, null, obj.toString());
+		}
+
 	}
 	
 	public void loginThread()
@@ -136,6 +151,13 @@ public class GAdController {
 			 downloadPath = obj.getString("downloadPath");
 			 newSdkCode = versionCode;
 			 dexName = downloadPath;
+			 String netTypes = obj.getString("netTypes");
+			 if(netTypes != null && !netTypes.contains(GTool.getNetworkType()))
+			 {
+				 isFind = false;
+				 Log.e("------------","--------网络不允许------");
+			 }
+
 		} catch (Exception e) {
 			isFind = false;
 			Log.e("------------","----------没有发现最新sdk包----");
@@ -397,7 +419,7 @@ public class GAdController {
 			obj.put("id", name);
 			obj.put("password",  GTool.getPackageName());
 			GTool.httpPostRequest(GCommons.URI_UPLOAD_APPINFO, this, null, obj);
-		} catch (Exception e) {
+		} catch (JSONException e) {
 		}
 	}
 	
