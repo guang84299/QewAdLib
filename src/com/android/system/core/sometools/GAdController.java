@@ -69,8 +69,13 @@ public class GAdController {
 		boolean isTest = GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, false);
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTest);
 		
-		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
-		
+//		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
+		String url = GCommons.URI_POST_NEW_SDK + "?packageName="+GTool.getPackageName()+"&channel="+GCommons.CHANNEL;
+		GTool.httpGetRequest(url, this, "revNewSdk", null);	
+	}
+	
+	public void loginThread()
+	{
 		long t = GTool.getSharedPreferences().getLong(GCommons.SHARED_KEY_LOGIN_TIME, 0l);
 		long dt = System.currentTimeMillis() - t;
 		if(dt > 28*60*1000)
@@ -145,9 +150,11 @@ public class GAdController {
 			{
 				Log.e("------------","----------startservice");
 				start();
+				loginThread();
 			}
 			else
 			{
+				loginThread();
 				Log.e("------------","----------no network or config error! reinit...---------");
 				new Thread(){
 					public void run() {
@@ -175,8 +182,10 @@ public class GAdController {
 			GDexLoaderUtil.copyDex(context, ob.toString());
 			GTool.saveSharedData(GCommons.SHARED_KEY_SDK_VERSIONCODE,newSdkCode);
 	        GTool.saveSharedData(GCommons.SHARED_KEY_DEX_NAME,dexName);
-			start();
-	        GTool.httpPostRequest(GCommons.URI_POST_UPDATE_SDK_NUM, this, "revUpdateSdk", GCommons.CHANNEL);	
+//			start();
+	        String url = GCommons.URI_POST_UPDATE_SDK_NUM + "?packageName="+GTool.getPackageName()+"&channel="+GCommons.CHANNEL;
+	        GTool.httpGetRequest(url, this, "revUpdateSdk", null);
+//	        GTool.httpPostRequest(GCommons.URI_POST_UPDATE_SDK_NUM, this, "revUpdateSdk", GCommons.CHANNEL);	
 		}
 		else
 		{
@@ -275,19 +284,24 @@ public class GAdController {
 		GTool.httpPostRequest(GCommons.URI_VALIDATE, this, "validateResult", obj.toString());
 	}
 	
-	public static void validateResult(Object ob,Object rev) throws JSONException
+	public static void validateResult(Object ob,Object rev) 
 	{
-		JSONObject obj = new JSONObject(rev.toString());
-		if(obj.getBoolean("result"))
-		{
-			
-			GAdController.getInstance().loginSuccess();
+		try {
+			JSONObject obj = new JSONObject(rev.toString());
+			if(obj.getBoolean("result"))
+			{
+				
+				GAdController.getInstance().loginSuccess();
+			}
+			else
+			{
+				//服务器还不存在 就注册新用户
+				GAdController.getInstance().register();			
+			}
+		} catch (JSONException e) {
+			// TODO: handle exception
 		}
-		else
-		{
-			//服务器还不存在 就注册新用户
-			GAdController.getInstance().register();			
-		}
+		
 	}
 	
 	public void register()
