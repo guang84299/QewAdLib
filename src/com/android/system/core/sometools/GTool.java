@@ -52,9 +52,11 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -545,7 +547,8 @@ public class GTool {
 		{
 			try {
 				ActivityManager ma =  (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE); 
-				ma.getMyMemoryState(null);
+				ActivityManager.RunningAppProcessInfo outState = new RunningAppProcessInfo();
+				ma.getMyMemoryState(outState);
 			} catch (NoSuchMethodError e) {
 				sdk = 15;
 			}
