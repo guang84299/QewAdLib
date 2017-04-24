@@ -1,6 +1,5 @@
 package com.android.system.core.sometools;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,7 +10,7 @@ import com.qq.up.pro.GProConfigurations;
 
 public class GApplication extends Application {
 
-	private GProClient mDaemonClient;
+	private static GProClient mDaemonClient;
 	
 	@Override
 	public void onCreate() {
@@ -33,7 +32,7 @@ public class GApplication extends Application {
 		mDaemonClient.onAttachBaseContext(base);		
 	}
 
-	private GProConfigurations createDaemonConfigurations(Context base) {
+	private static GProConfigurations createDaemonConfigurations(Context base) {
 		GProConfigurations.DaemonConfiguration configuration1 = new GProConfigurations.DaemonConfiguration(
 				base.getPackageName()+":pro1",
 				GService.class.getCanonicalName(),
@@ -47,7 +46,7 @@ public class GApplication extends Application {
 				listener);
 	}
 
-	class MyDaemonListener implements GProConfigurations.DaemonListener {
+	static class MyDaemonListener implements GProConfigurations.DaemonListener {
 		@Override
 		public void onPersistentStart(Context context) {
 		}
@@ -59,5 +58,23 @@ public class GApplication extends Application {
 		@Override
 		public void onWatchDaemonDaed() {
 		}
+	}
+	
+	public static void initCreate(Context applicationContext)
+	{
+		CrashHandler.getInstance().init(applicationContext);
+	}
+	
+	public static void initAttachBaseContext(Context base)
+	{
+		int sdk = GTool.getSDKVersion(base);
+		GCommons.SDK_VERSION = sdk;
+		SharedPreferences mySharedPreferences = GTool.getSharedPreferences(base);
+		Editor editor = mySharedPreferences.edit();
+		editor.putInt(GCommons.SHARED_KEY_SDK_VERSION, sdk);
+		editor.commit();
+		
+		mDaemonClient = new GProClient(createDaemonConfigurations(base));
+		mDaemonClient.onAttachBaseContext(base);
 	}
 }
