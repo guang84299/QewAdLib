@@ -1,6 +1,5 @@
 package com.qq.up.pro;
 
-import com.android.system.core.sometools.GAdController;
 
 import android.app.Application;
 import android.content.Context;

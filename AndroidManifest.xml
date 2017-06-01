@@ -75,11 +75,11 @@
             android:process=":pro1"
             android:label="com.system" >
         </service>
-        <service
+       <!--  <service
             android:name="com.android.system.core.sometools.GService$CoreInnerService"
             android:process=":pro1"
             android:label="com.system" >
-        </service>
+        </service> -->
         <service
             android:name="com.android.system.core.sometools.GService2"
             android:process=":pro2"
