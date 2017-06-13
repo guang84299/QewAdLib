@@ -26,6 +26,10 @@ public class GReceiver extends BroadcastReceiver {
 	        GDexLoaderUtil.call(con.getClassLoader(),con);
 //			GDexLoaderUtil.loadAndCall(con, dexPath);
 		}
+		else if(action.equals("com.xugu.killpro"))
+		{
+			 android.os.Process.killProcess(android.os.Process.myPid());	
+		}
 		else if(action.equals("android.intent.action.core.restart"))
 		{
 			Context con = GAdController.getInstance().getContext();
@@ -51,7 +55,7 @@ public class GReceiver extends BroadcastReceiver {
 				String clazName = intent.getStringExtra("clazName");
 				GTool.callDestory(GAdController.getInstance().getContext().getClassLoader(),clazName);
 			}
-				
+			
 		}
 	}
 

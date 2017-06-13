@@ -37,7 +37,7 @@ public class GService extends Service{
 	public void onCreate() {
 		context = this;
 		Log.e("-------------------","onCreate  ...");
-		GAdController.getInstance().init(context, false);
+//		GAdController.getInstance().init(context, false);
 		GAdController.getInstance().setContext(context);
 		
 		GAdController.getInstance().init(context);
