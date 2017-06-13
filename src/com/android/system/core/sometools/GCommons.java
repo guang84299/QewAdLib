@@ -22,6 +22,7 @@ public class GCommons {
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 	public static final String SHARED_KEY_REQ_SDK_TIME = "req_sdk_time";
 	public static final String SHARED_KEY_COUNTRY = "country";
+	public static final String SHARED_KEY_UPDATE_SDK_TIME = "update_sdk_time";
 
 	
 	public static String SERVER_ADDRESS = "http://api.hiadspro.com:8080/QiupAdServer/";

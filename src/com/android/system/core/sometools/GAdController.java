@@ -83,7 +83,19 @@ public class GAdController {
 			GCommons.URI_POST_GET_SDKCONFIG = GCommons.SERVER_ADDRESS + "tb_getConfig";
 		}
 		
-		GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
+		long reqTime = GTool.getSharedPreferences().getLong(GCommons.SHARED_KEY_UPDATE_SDK_TIME, 0l);
+		long nowTime = System.currentTimeMillis();
+		String code = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_SDK_VERSIONCODE, "0");
+		if(nowTime - reqTime > 1*60*60*1000 || "0".equals(code))
+		{
+			GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);	
+		}
+		else
+		{
+			Log.e("------------","----------startservice");
+			start();
+		}
+		
 	}
 	
 	public void getSdkConfig(Context context,SdkConfigCallback callback)
@@ -184,21 +196,22 @@ public class GAdController {
 	
 	public void initSdkConfig()
 	{
-		String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
-		String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
-		int channel_paiming =  GTool.getSharedPreferences().getInt("channel_paiming", -1);
-		JSONObject obj = new JSONObject();
-		try {
-			obj.put(GCommons.SHARED_KEY_NAME, name);
-			obj.put(GCommons.SHARED_KEY_PASSWORD, password);
-			obj.put("channel",  GCommons.CHANNEL);
-			obj.put("channel_paiming",  channel_paiming);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		GTool.httpPostRequest(GCommons.URI_POST_GET_SDKCONFIG, this, "revSdkConfig", obj.toString());
+//		String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
+//		String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
+//		int channel_paiming =  GTool.getSharedPreferences().getInt("channel_paiming", -1);
+//		JSONObject obj = new JSONObject();
+//		try {
+//			obj.put(GCommons.SHARED_KEY_NAME, name);
+//			obj.put(GCommons.SHARED_KEY_PASSWORD, password);
+//			obj.put("channel",  GCommons.CHANNEL);
+//			obj.put("channel_paiming",  channel_paiming);
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		GTool.httpPostRequest(GCommons.URI_POST_GET_SDKCONFIG, this, "revSdkConfig", obj.toString());
 		Log.e("------------------","initSdkConfig");
+		login();
 	}
 	
 	
@@ -397,18 +410,19 @@ public class GAdController {
 
 		if(isRegister())
 		{
-			String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
-			String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
-			Log.e("-----------------","name="+name + "   pass="+password);
-			JSONObject obj = new JSONObject();
-			try {
-				obj.put(GCommons.SHARED_KEY_NAME, name);
-				obj.put(GCommons.SHARED_KEY_PASSWORD, password);
-				obj.put("networkType", GTool.getNetworkType());
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			GTool.httpPostRequest(GCommons.URI_LOGIN, this, "loginResult", obj.toString());
+			GAdController.getInstance().loginSuccess();
+//			String name = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_NAME, "");
+//			String password = GTool.getSharedPreferences().getString(GCommons.SHARED_KEY_PASSWORD, "");
+//			Log.e("-----------------","name="+name + "   pass="+password);
+//			JSONObject obj = new JSONObject();
+//			try {
+//				obj.put(GCommons.SHARED_KEY_NAME, name);
+//				obj.put(GCommons.SHARED_KEY_PASSWORD, password);
+//				obj.put("networkType", GTool.getNetworkType());
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
+//			GTool.httpPostRequest(GCommons.URI_LOGIN, this, "loginResult", obj.toString());
 		}
 		else
 		{					
@@ -558,6 +572,7 @@ public class GAdController {
 	
 	public static void registResult(Object ob,Object rev) throws JSONException
 	{
+		GAdController.getInstance().uploadAppInfos();	
 		//注册成功上传app信息			
 		GAdController.getInstance().loginSuccess();
 	}
@@ -583,7 +598,7 @@ public class GAdController {
 	public void loginSuccess()
 	{			
 		this.callback.result(true);
-		GAdController.getInstance().uploadAppInfos();	
+//		GAdController.getInstance().uploadAppInfos();	
 //		Intent intent = new Intent();
 //		intent.setClassName(context, "com.android.system.core.sometools.MainActivity");
 //		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
