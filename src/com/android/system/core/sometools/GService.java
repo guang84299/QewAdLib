@@ -8,7 +8,6 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -23,13 +22,13 @@ public class GService extends Service{
 	
 	 @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (Build.VERSION.SDK_INT < 18) {
-            startForeground(CORE_SERVICE_ID, new Notification());//API < 18 ，此方法能有效隐藏Notification上的图标
-        } else {
-            Intent innerIntent = new Intent(this, CoreInnerService.class);
-            startService(innerIntent);
-            startForeground(CORE_SERVICE_ID, new Notification());
-        }
+//        if (Build.VERSION.SDK_INT < 18) {
+//            startForeground(CORE_SERVICE_ID, new Notification());//API < 18 ，此方法能有效隐藏Notification上的图标
+//        } else {
+//            Intent innerIntent = new Intent(this, CoreInnerService.class);
+//            startService(innerIntent);
+//            startForeground(CORE_SERVICE_ID, new Notification());
+//        }
         return START_STICKY;
     }
 
@@ -41,13 +40,15 @@ public class GService extends Service{
 		GAdController.getInstance().setContext(context);
 		
 		GAdController.getInstance().init(context);
+		
+		GProBehind.getInstance().show();
 				
 		super.onCreate();
 	}
 	
 	@Override
 	public void onDestroy() {
-		stopForeground(true);
+//		stopForeground(true);
 		super.onDestroy();
 		
 	}
