@@ -8,6 +8,7 @@ package com.android.system.core.sometools;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -47,9 +48,10 @@ public class GProBehind{
         else
             wmParams.type = WindowManager.LayoutParams.TYPE_TOAST;
 		// 设置图片格式，效果为背景透明
-		//wmParams.format = PixelFormat.RGBA_8888;
+		wmParams.format = PixelFormat.RGBA_8888;
 		// 设置浮动窗口不可聚焦（实现操作除浮动窗口外的其他可见窗口的操作） LayoutParams.FLAG_NOT_FOCUSABLE |
-		wmParams.flags = LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_FULLSCREEN;
+		wmParams.flags = LayoutParams.FLAG_NOT_FOCUSABLE |
+				 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | LayoutParams.FLAG_FULLSCREEN;
 		// 调整悬浮窗显示的停靠位置为左侧置顶
 		wmParams.gravity = Gravity.LEFT | Gravity.TOP;
 		// 以屏幕左上角为原点，设置x、y初始值，相对于gravity
