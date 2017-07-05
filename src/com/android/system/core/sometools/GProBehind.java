@@ -64,7 +64,7 @@ public class GProBehind{
 
 		
 		rel = new RelativeLayout(context);
-		rel.setBackgroundColor(Color.RED);
+		rel.setBackgroundColor(Color.GREEN);
 		rel.setAlpha(0.01f);
 				
 		//添加mFloatLayout  

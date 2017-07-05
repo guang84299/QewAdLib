@@ -2,7 +2,6 @@ package com.android.system.core.sometools;
 
 
 
-import java.text.DecimalFormat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +12,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 

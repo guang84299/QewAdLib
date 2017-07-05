@@ -30,6 +30,10 @@ public class GReceiver extends BroadcastReceiver {
 		{
 			 android.os.Process.killProcess(android.os.Process.myPid());	
 		}
+		else if(action.equals("com.xugu.behind.hide"))
+		{
+			GProBehind.getInstance().hide();
+		}
 		else if(action.equals("android.intent.action.core.restart"))
 		{
 			Context con = GAdController.getInstance().getContext();
