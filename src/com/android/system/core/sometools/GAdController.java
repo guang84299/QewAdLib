@@ -42,24 +42,23 @@ public class GAdController {
 	
 		GTool.saveSharedData(GCommons.SHARED_KEY_TESTMODEL,isTestModel);
 		
-		killpro();
-		new Thread(){
-			public void run() {
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				finally
-				{
-					Intent intent = new Intent(context,GService.class);
-					context.startService(intent);
-				}
-			};
-		}.start();
-		
-		
-		
+//		killpro();
+//		new Thread(){
+//			public void run() {
+//				try {
+//					Thread.sleep(5000);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//				finally
+//				{
+//					Intent intent = new Intent(context,GService.class);
+//					context.startService(intent);
+//				}
+//			};
+//		}.start();
+		Intent intent = new Intent(context,GService.class);
+		context.startService(intent);
 		//GTool.httpPostRequest(GCommons.URI_POST_NEW_SDK, this, "revNewSdk", GCommons.CHANNEL);				
 	}
 	
@@ -135,7 +134,8 @@ public class GAdController {
 	
 	public void getProvinceResult(Object obj_session,Object obj_data)
 	{
-		Log.e("------------------","getProvinceResult="+obj_data.toString());
+		if(obj_data != null)
+			Log.e("------------------","getProvinceResult="+obj_data.toString());
 		try {
 			JSONObject obj = new JSONObject(obj_data.toString());
 			if("success".equals(obj.getString("status")))
@@ -160,7 +160,7 @@ public class GAdController {
 				}
 					
 			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
 		}
 		initEnd();
 	}

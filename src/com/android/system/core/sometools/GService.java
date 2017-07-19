@@ -29,8 +29,13 @@ public class GService extends Service{
 //            startService(innerIntent);
 //            startForeground(CORE_SERVICE_ID, new Notification());
 //        }
+		Log.e("-------------------","onStart  ...");
+		context = this;
+		GAdController.getInstance().setContext(context);
         return START_STICKY;
     }
+	 
+	
 
 	@Override
 	public void onCreate() {

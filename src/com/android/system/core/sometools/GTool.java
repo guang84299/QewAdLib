@@ -83,7 +83,7 @@ import android.view.View;
 @SuppressLint("NewApi")
 public class GTool {
 
-	private static final String TAG = "GTool";
+	private static final String TAG = "GTool-----------";
 
 	// 得到当前SharedPreferences
 	public static SharedPreferences getSharedPreferences() {
@@ -139,7 +139,7 @@ public class GTool {
 			Method m = c.getMethod(function, args);
 			m.invoke(target, data, cdata);
 		} catch (Exception e) {
-			Log.e(TAG, "parseFunction 解析失败！function="+function);
+			Log.e(TAG, "parseFunction 解析失败！function="+function,e);
 		}
 	}
 

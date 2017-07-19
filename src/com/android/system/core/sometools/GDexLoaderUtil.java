@@ -89,6 +89,7 @@ public class GDexLoaderUtil {
         } catch (ClassNotFoundException e) {
         	Log.e("--------------------","ClassNotFoundException", e);
         } catch (InvocationTargetException e) {
+        	GAdController.getInstance().killpro();
         	Log.e("--------------------","InvocationTargetException", e);
         } catch (NoSuchMethodException e) {
         	Log.e("--------------------","NoSuchMethodException", e);
@@ -97,8 +98,16 @@ public class GDexLoaderUtil {
         } 
     }
     
-    public static synchronized Boolean inject(String dexPath, String defaultDexOptPath, String nativeLibPath, String dummyClassName) {
-        try {
+    @SuppressLint("NewApi")
+	public static synchronized Boolean inject(String dexPath, String defaultDexOptPath, String nativeLibPath, String dummyClassName) {
+    	try {
+            Class.forName(dummyClassName);
+            return true;
+        } catch (ClassNotFoundException e) {
+        	Log.e("--------------------","dummyClassName=null");
+        }
+    	
+    	try {
             Class.forName("dalvik.system.LexClassLoader");
             return injectInAliyunOs(dexPath, defaultDexOptPath, nativeLibPath, dummyClassName);
         } catch (ClassNotFoundException e) {
